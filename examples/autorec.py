@@ -7,12 +7,12 @@ Example to run Probabilistic Bayesian personalized ranking (BPR) model with Rati
 """
 
 import cornac
-from cornac.datasets import MovieLens100K
-from cornac.eval_strategies import RatioSplit
+from cornac.datasets import movielens
+from cornac.eval_methods import RatioSplit
 from cornac.models import Autorec
 
 # Load the MovieLens 100K dataset
-ml_100k = MovieLens100K.load_data()
+ml_100k = movielens.load_100k()
 
 # Instantiate an evaluation strategy.
 ratio_split = RatioSplit(data=ml_100k, test_size=0.2, rating_threshold=1.0, exclude_unknowns=False)

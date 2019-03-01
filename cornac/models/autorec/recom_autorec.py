@@ -5,9 +5,8 @@
 
 from ..recommender import Recommender
 from .autorec import *
-from ...utils.generic_utils import *
 from ...exception import ScoreException
-
+from ...utils import common
 
 class Autorec(Recommender):
     """Autoencoders Meet Collaborative Filtering
@@ -142,7 +141,7 @@ class Autorec(Recommender):
             return np.maximum(x, 0)
 
         if self.g_act == "Sigmoid":
-            g_act = sigmoid
+            g_act = common.sigmoid
         elif self.g_act == "Relu":
             g_act = relu
         elif self.g_act == "Tanh":
@@ -153,7 +152,7 @@ class Autorec(Recommender):
             raise NotImplementedError("Active function ERROR")
 
         if self.f_act == "Sigmoid":
-            f_act = sigmoid
+            f_act = common.sigmoid
         elif self.f_act == "Relu":
             f_act = relu
         elif self.f_act == "Tanh":
@@ -167,7 +166,7 @@ class Autorec(Recommender):
 
         # transform user_pred to a flatten array, but keep thinking about another possible format
         user_pred = np.array(user_pred, dtype='float64').flatten()
-        user_pred = clipping(user_pred, 1, 5)
+        user_pred = common.clip(user_pred, 1, 5)
 
         return user_pred
 
