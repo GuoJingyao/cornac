@@ -22,28 +22,21 @@ VALID_DATA_FORMATS = ['UIR', 'UIRT']
 
 class BaseMethod:
     """Base Evaluation Method
-
     Parameters
     ----------
     data: array-like
         The original data.
-
     data_format: str, default: 'UIR'
         The format of given data.
-
     total_users: int, optional, default: None
         Total number of unique users in the data including train, val, and test sets
-
     total_users: int, optional, default: None
         Total number of unique items in the data including train, val, and test sets
-
     rating_threshold: float, optional, default: 1
         The minimum value that is considered to be a good rating used for ranking, \
         e.g, if the ratings are in {1, ..., 5}, then good_rating = 4.
-
     exclude_unknowns: bool, optional, default: False
         Ignore unknown users and items (cold-start) during evaluation and testing
-
     verbose: bool, optional, default: False
         Output running log
     """
@@ -146,12 +139,10 @@ class BaseMethod:
 
     def _organize_metrics(self, metrics):
         """Organize metrics according to their types (rating or raking)
-
         Parameters
         ----------
         metrics: :obj:`iterable`
             List of metrics.
-
         """
         if isinstance(metrics, dict):
             rating_metrics = metrics.get('rating', [])
@@ -190,12 +181,14 @@ class BaseMethod:
 
     def _build_modules(self):
         for user_module in [self.user_text, self.user_image, self.user_graph]:
-            if user_module is None: continue
-            user_module.build(ordered_ids=self.global_uid_map.keys())
+            if user_module is None:
+                continue
+            user_module.build(global_id_map=self.global_uid_map)
 
         for item_module in [self.item_text, self.item_image, self.item_graph]:
-            if item_module is None: continue
-            item_module.build(ordered_ids=self.global_iid_map.keys())
+            if item_module is None:
+                continue
+            item_module.build(global_id_map=self.global_iid_map)
 
         for data_set in [self.train_set, self.test_set, self.val_set]:
             if data_set is None: continue
@@ -217,18 +210,14 @@ class BaseMethod:
 
     def evaluate(self, model, metrics, user_based):
         """Evaluate given models according to given metrics
-
         Parameters
         ----------
         model: :obj:`cornac.models.Recommender`
             Recommender model to be evaluated.
-
         metrics: :obj:`iterable`
             List of metrics.
-
         user_based: bool
             Evaluation mode. Whether results are averaging based on number of users or number of ratings.
-
         """
         rating_metrics, ranking_metrics = self._organize_metrics(metrics)
 
@@ -252,7 +241,7 @@ class BaseMethod:
         for mt in (rating_metrics + ranking_metrics):
             metric_user_results[mt.name] = {}
 
-        for user_id in tqdm.tqdm(self.test_set.get_users(), disable=not self.verbose):
+        for user_id in tqdm.tqdm(self.test_set.users, disable=not self.verbose):
             # ignore unknown users when self.exclude_unknown
             if self.exclude_unknowns and self.train_set.is_unk_user(user_id):
                 continue
@@ -330,35 +319,26 @@ class BaseMethod:
     def from_splits(cls, train_data, test_data, val_data=None, data_format='UIR',
                     rating_threshold=1.0, exclude_unknowns=False, verbose=False):
         """Constructing evaluation method given data.
-
         Parameters
         ----------
         train_data: array-like
             Training data
-
         test_data: array-like
             Test data
-
         val_data: array-like
             Validation data
-
         data_format: str, default: 'UIR'
             The format of given data.
-
         rating_threshold: float, default: 1.0
             Threshold to decide positive or negative preferences.
-
         exclude_unknowns: bool, default: False
             Whether to exclude unknown users/items in evaluation.
-
         verbose: bool, default: False
             The verbosity flag.
-
         Returns
         -------
         method: :obj:`<cornac.eval_methods.BaseMethod>`
             Evaluation method object.
-
         """
         method = cls(data_format=data_format, rating_threshold=rating_threshold,
                      exclude_unknowns=exclude_unknowns, verbose=verbose)

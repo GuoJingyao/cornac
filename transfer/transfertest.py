@@ -2,7 +2,7 @@ import cornac
 from cornac.datasets import movielens
 from cornac.models import PMF
 from cornac.eval_methods import BaseMethod
-from cornac.utils import data_utils
+from cornac.data import trainset
 import random
 import numpy
 from sklearn.model_selection import train_test_split

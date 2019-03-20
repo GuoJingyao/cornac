@@ -6,12 +6,12 @@
 
 import numpy as np
 import scipy.sparse as sp
-import pmf
 from ..recommender import Recommender
 from ...utils.common import sigmoid
 from ...utils.common import scale
 from ...utils.common import intersects
 from ...exception import ScoreException
+from .sorec import *
 
 
 class SOREC(Recommender):
@@ -60,16 +60,15 @@ class SOREC(Recommender):
      CIKM ’08, pages 931–940, Napa Valley, USA, 2008.
     """
 
-    def __init__(self, l=5, max_iter=100, learning_rate=0.001, gamma=0.9, lamda=0.001, name="SOREC", variant='non_linear',
+    def __init__(self, l=5, max_iter=100, learning_rate=0.001, lamda_C=10, lamda=0.001, name="SOREC",
                  trainable=True, verbose=False, init_params={'U': None, 'V': None, 'Z': None}):
         Recommender.__init__(self, name=name, trainable=trainable, verbose=verbose)
         self.l = l
         self.init_params = init_params
         self.max_iter = max_iter
         self.learning_rate = learning_rate
-        self.gamma = gamma
+        self.lamda_C = lamda_C
         self.lamda = lamda
-        self.variant = variant
 
         self.ll = np.full(max_iter, 0)
         self.eps = 0.000000001
@@ -83,12 +82,12 @@ class SOREC(Recommender):
             raise ValueError('initial parameters U dimension error')
 
         if self.V is None:
-            print("random initialize user factors")
+            print("random initialize item factors")
         elif self.V.shape[1] != l:
             raise ValueError('initial parameters V dimension error')
 
         if self.Z is None:
-            print("random initialize user factors")
+            print("random initialize social factors")
         elif self.Z.shape[1] != l:
             raise ValueError('initial parameters Z dimension error')
 
@@ -112,12 +111,12 @@ class SOREC(Recommender):
             # converting data to the triplet format (needed for cython function pmf)
             (rid, cid, val) = sp.find(X)
             val = np.array(val, dtype='float32')
-            if self.variant == 'non_linear':  # need to map the ratings to [0,1]
-                if [self.train_set.min_rating, self.train_set.max_rating] != [0, 1]:
-                    if self.train_set.min_rating == self.train_set.max_rating:
-                        val = scale(val, 0., 1., 0., self.train_set.max_rating)
-                    else:
-                        val = scale(val, 0., 1., self.train_set.min_rating, self.train_set.max_rating)
+
+            if [self.train_set.min_rating, self.train_set.max_rating] != [0, 1]:
+                if self.train_set.min_rating == self.train_set.max_rating:
+                    val = scale(val, 0., 1., 0., self.train_set.max_rating)
+                else:
+                    val = scale(val, 0., 1., self.train_set.min_rating, self.train_set.max_rating)
             rid = np.array(rid, dtype='int32')
             cid = np.array(cid, dtype='int32')
             tX = np.concatenate((np.concatenate(([rid], [cid]), axis=0).T, val.reshape((len(val), 1))), axis=1)
@@ -126,16 +125,8 @@ class SOREC(Recommender):
             if self.verbose:
                 print('Learning...')
 
-            if self.variant == 'linear':
-                res = pmf.pmf_linear(tX, k=self.k, n_X=X.shape[0], d_X=X.shape[1], n_epochs=self.max_iter,
-                                     lamda=self.lamda, learning_rate=self.learning_rate, gamma=self.gamma,
-                                     init_params=self.init_params)
-            elif self.variant == 'non_linear':
-                res = pmf.pmf_non_linear(tX, k=self.k, n_X=X.shape[0], d_X=X.shape[1], n_epochs=self.max_iter,
-                                         lamda=self.lamda, learning_rate=self.learning_rate, gamma=self.gamma,
-                                         init_params=self.init_params)
-            else:
-                raise ValueError('variant must be one of {"linear","non_linear"}')
+            res = sorec(train_set, l=self.l, n_epochs=self.max_iter, learning_rate=self.learning_rate,
+                        lamda_C=self.lamda_C, lamda=self.lamda, init_params=self.init_params)
 
             self.U = np.asarray(res['U'])
             self.V = np.asarray(res['V'])

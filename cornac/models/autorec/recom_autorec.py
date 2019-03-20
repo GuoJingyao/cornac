@@ -85,10 +85,18 @@ class Autorec(Recommender):
         self.g_act = g_act
         self.f_act = f_act
 
+
         if (self.V is None) & (self.W is None):
             print("random initialize parameters")
         elif (self.V.shape[0]!=self.W.shape[1]) | (self.V.shape[1]!=self.W.shape[0]) | (self.V.shape[0]!=k):
             raise ValueError('initial parameters dimension error')
+
+    def _load_or_randn(self, size, init_values=None):
+        if init_values is None:
+            tensor = torch.randn(size, requires_grad=True, device=self.device)
+        else:
+            tensor = torch.tensor(init_values, requires_grad=True, device=self.device)
+        return tensor
 
     # fit the recommender model to the traning data
     def fit(self, train_set):
