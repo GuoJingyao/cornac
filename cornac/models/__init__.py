@@ -11,4 +11,5 @@ from .vbpr import *
 from .online_ibpr import *
 from .autorec import *
 from .sorec import *
+from .pmf_seperable import *
 # from .mf import *
