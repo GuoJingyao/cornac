@@ -36,20 +36,25 @@ i_max = max(valid_data[:, 1].astype(int))+1
 # the user and item index corresponding to the valid_data set index
 initialU = numpy.random.normal(loc=0.0, scale=1.0, size=u_max*10).reshape(u_max, 10).astype(numpy.float32)
 initialV = numpy.random.normal(loc=0.0, scale=1.0, size=i_max*10).reshape(i_max, 10).astype(numpy.float32)
+mae = cornac.metrics.MAE()
+rmse = cornac.metrics.RMSE()
 
 # Instantiate an evaluation method.
 Strain_Ttest = BaseMethod.from_splits(train_data=SourceData, test_data=target_test, exclude_unknowns=False, verbose=True)
 Ttrain_Ttest = BaseMethod.from_splits(train_data=target_train, test_data=target_test, exclude_unknowns=False, verbose=True)
 
 # Instantiate a PMF recommender model.
-pmf = PMF_seperable(k=10, max_iter=100, learning_rate=0.001, lamda=0.001, init_params={'V':initialV, 'U':initialU})
-
-# Instantiate evaluation metrics.
-mae = cornac.metrics.MAE()
-rmse = cornac.metrics.RMSE()
-rec_20 = cornac.metrics.Recall(k=20)
-pre_20 = cornac.metrics.Precision(k=20)
+pmf_baseline = PMF_seperable(k=10, max_iter=10, learning_rate=0.001, lamda=0.001, init_params={'V':numpy.copy(initialV), 'U':numpy.copy(initialU)})
 
 # Instantiate and then run an experiment.
-exp_Baseline = cornac.Experiment(eval_method=Ttrain_Ttest, models=[pmf], metrics=[mae, rmse], user_based=True)
+exp_Baseline = cornac.Experiment(eval_method=Ttrain_Ttest, models=[pmf_baseline], metrics=[mae, rmse], user_based=True)
 exp_Baseline.run()
+
+trainedV = initialV
+for oldindex, newindex in Ttrain_Ttest.global_uid_map.items():
+    trainedV[int(oldindex), :] = pmf_baseline.V[newindex, :]
+
+
+pmf_fixV = PMF_seperable(k=10, max_iter=100, learning_rate=0.001, lamda=0.001, fixedParameter ='V', init_params={'V':trainedV, 'U':numpy.copy(initialU)})
+
+

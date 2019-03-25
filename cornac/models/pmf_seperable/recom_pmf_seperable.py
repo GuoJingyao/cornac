@@ -107,10 +107,9 @@ class PMF_seperable(Recommender):
 
         print('Learning...')
 
-        res = pmf_seperable(tX, k=self.k, n_X=X.shape[0], d_X=X.shape[1], n_epochs=self.max_iter,
+        res = pmf_seperable(self.train_set, k=self.k, n_X=X.shape[0], d_X=X.shape[1], n_epochs=self.max_iter, fixedParameter =self.fixedParameter,
                                  lamda=self.lamda, learning_rate=self.learning_rate, gamma=self.gamma,
                                  init_params=self.init_params)
-
 
         self.U = np.asarray(res['U'])
         self.V = np.asarray(res['V'])
