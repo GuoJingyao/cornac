@@ -126,7 +126,11 @@ class RatioSplit(BaseMethod):
             print('Total users = {}'.format(self.total_users))
             print('Total items = {}'.format(self.total_items))
 
+    # def evaluate(self, model, metrics, user_based):
+    #     self.split()
+    #     metric_avg_results, per_user_results = BaseMethod.evaluate(self, model, metrics, user_based)
+    #     return SingleModelResult(metric_avg_results, per_user_results)
+
     def evaluate(self, model, metrics, user_based):
         self.split()
-        metric_avg_results, per_user_results = BaseMethod.evaluate(self, model, metrics, user_based)
-        return SingleModelResult(metric_avg_results, per_user_results)
+        return BaseMethod.evaluate(self, model, metrics, user_based)

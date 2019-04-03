@@ -100,9 +100,11 @@ class PMF_seperable(Recommender):
                     val = scale(val, 0., 1., 0., self.train_set.max_rating)
                 else:
                     val = scale(val, 0., 1., self.train_set.min_rating, self.train_set.max_rating)
-        rid = np.array(rid, dtype='int32')
-        cid = np.array(cid, dtype='int32')
-        tX = np.concatenate((np.concatenate(([rid], [cid]), axis=0).T, val.reshape((len(val), 1))), axis=1)
+        # rid = np.array(rid, dtype='int32')
+        # cid = np.array(cid, dtype='int32')
+        # tX = np.concatenate((np.concatenate(([rid], [cid]), axis=0).T, val.reshape((len(val), 1))), axis=1)
+
+        self.train_set.uir_tuple = tuple([self.train_set.uir_tuple[0],self.train_set.uir_tuple[1],val])
         del rid, cid, val
 
         print('Learning...')
@@ -117,42 +119,42 @@ class PMF_seperable(Recommender):
         if self.verbose:
             print('Learning completed')
 
+    def score(self, user_id, item_id=None):
 
-def score(self, user_id, item_id=None):
-    """Predict the scores/ratings of a user for an item.
+        """Predict the scores/ratings of a user for an item.
 
-    Parameters
-    ----------
-    user_id: int, required
-        The index of the user for whom to perform score prediction.
+        Parameters
+        ----------
+        user_id: int, required
+            The index of the user for whom to perform score prediction.
 
-    item_id: int, optional, default: None
-        The index of the item for that to perform score prediction.
-        If None, scores for all known items will be returned.
+        item_id: int, optional, default: None
+            The index of the item for that to perform score prediction.
+            If None, scores for all known items will be returned.
 
-    Returns
-    -------
-    res : A scalar or a Numpy array
-        Relative scores that the user gives to the item or to all known items
+        Returns
+        -------
+        res : A scalar or a Numpy array
+            Relative scores that the user gives to the item or to all known items
 
-    """
-    if item_id is None:
-        if self.train_set.is_unk_user(user_id):
-            raise ScoreException("Can't make score prediction for (user_id=%d)" % user_id)
+        """
 
-        known_item_scores = self.V.dot(self.U[user_id, :])
-        return known_item_scores
-    else:
-        if self.train_set.is_unk_user(user_id) or self.train_set.is_unk_item(item_id):
-            raise ScoreException("Can't make score prediction for (user_id=%d, item_id=%d)" % (user_id, item_id))
+        if item_id is None:
+            if self.train_set.is_unk_user(user_id):
+                raise ScoreException("Can't make score prediction for (user_id=%d)" % user_id)
 
-        user_pred = self.V[item_id, :].dot(self.U[user_id, :])
+            known_item_scores = self.V.dot(self.U[user_id, :])
+            return known_item_scores
+        else:
+            if self.train_set.is_unk_user(user_id) or self.train_set.is_unk_item(item_id):
+                raise ScoreException("Can't make score prediction for (user_id=%d, item_id=%d)" % (user_id, item_id))
 
-        if self.variant == "non_linear":
+            user_pred = self.V[item_id, :].dot(self.U[user_id, :])
             user_pred = sigmoid(user_pred)
             if self.train_set.min_rating == self.train_set.max_rating:
                 user_pred = scale(user_pred, 0., self.train_set.max_rating, 0., 1.)
             else:
                 user_pred = scale(user_pred, self.train_set.min_rating, self.train_set.max_rating, 0., 1.)
 
-        return user_pred
+            return user_pred
+

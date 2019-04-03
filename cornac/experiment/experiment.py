@@ -42,6 +42,7 @@ class Experiment:
         self.metrics = self._validate_metrics(metrics)
         self.user_based = user_based
         self.verbose = verbose
+        self.results = Result()
         from ..eval_methods.ratio_split import RatioSplit
         from ..eval_methods.cross_validation import CrossValidation
         if isinstance(eval_method, RatioSplit):

@@ -53,6 +53,7 @@ class Recommender:
             Relative scores that the user gives to the item or to all known items
 
         """
+
         raise NotImplementedError('The algorithm is not able to make score prediction!')
 
     def default_score(self):

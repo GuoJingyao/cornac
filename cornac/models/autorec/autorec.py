@@ -27,7 +27,6 @@ def autorec(train_set, data, k, lamda=0.01, n_epochs=100, learning_rate=0.001, b
         newV = np.zeros((k, d))
         for oldidx, newidx in train_set._iid_map.items():
             newV[:, newidx]=V[:, int(oldidx)]
-        # V = torch.from_numpy(newV).float()
         V = torch.tensor(newV, dtype=torch.float32, requires_grad=True)
 
     if init_params['W'] is None:
@@ -37,7 +36,6 @@ def autorec(train_set, data, k, lamda=0.01, n_epochs=100, learning_rate=0.001, b
         newW = np.zeros((d, k))
         for oldidx, newidx in train_set._iid_map.items():
             newW[newidx, :]=W[int(oldidx), :]
-        # W = torch.from_numpy(newW).float()
         W = torch.tensor(newW, dtype=torch.float32, requires_grad=True)
 
     if init_params['mu'] is None:

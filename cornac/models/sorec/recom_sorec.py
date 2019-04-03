@@ -116,11 +116,9 @@ class SOREC(Recommender):
                 if self.train_set.min_rating == self.train_set.max_rating:
                     val = scale(val, 0., 1., 0., self.train_set.max_rating)
                 else:
-                    val = scale(val, 0., 1., self.train_set.min_rating, self.train_set.max_rating)
-            rid = np.array(rid, dtype='int32')
-            cid = np.array(cid, dtype='int32')
-            tX = np.concatenate((np.concatenate(([rid], [cid]), axis=0).T, val.reshape((len(val), 1))), axis=1)
-            del rid, cid, val
+                    val = (val - 1) / (max(val) - 1)
+
+            self.train_set.uir_tuple = tuple([self.train_set.uir_tuple[0], self.train_set.uir_tuple[1], val])
 
             if self.verbose:
                 print('Learning...')

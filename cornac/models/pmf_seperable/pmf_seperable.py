@@ -44,6 +44,7 @@ def pmf_seperable(trainset, n_X, d_X, k, fixedParameter=None, n_epochs=100, lamd
         for epoch in range(n_epochs):
             for u_, i_, val in trainset.uir_iter(batch_size=1, shuffle=False):
                 u_, i_ = int(u_), int(i_)
+
                 sg = common.sigmoid(np.dot(U[u_, :], V[i_, :].T))
                 e = (val - sg)  # Error for the obseved rating u, i, val
                 we = e * sg * (1. - sg)  # Weighted error for the obseved rating u, i, val
@@ -52,7 +53,7 @@ def pmf_seperable(trainset, n_X, d_X, k, fixedParameter=None, n_epochs=100, lamd
                 U[u_, :] += learning_rate * (grad_u[u_, :] / (np.sqrt(cache_u[u_,:]) + eps))
                 # Update the user factor, better to reweight the L2 regularization terms acoording the number of ratings per-user
                 loss[epoch] += e * e + lamda * (np.dot(U[u_, :].T, U[u_, :]) + np.dot(V[i_, :].T, V[i_, :]))
-            print('epoch %i, loss: %f' % (epoch, loss[epoch]))
+            # print('epoch %i, loss: %f' % (epoch, loss[epoch]))
         res = {'U': U, 'V': V, 'loss': loss}
         return res
     else:
@@ -73,7 +74,7 @@ def pmf_seperable(trainset, n_X, d_X, k, fixedParameter=None, n_epochs=100, lamd
                 V[i_, :] += learning_rate * (
                         grad_v[i_, :] / (np.sqrt(cache_v[i_, :]) + eps))
                 loss[epoch] += e * e + lamda * (np.dot(U[u_, :].T, U[u_, :]) + np.dot(V[i_, :].T, V[i_, :]))
-            print('epoch %i, loss: %f' % (epoch, loss[epoch]))
+            # print('epoch %i, loss: %f' % (epoch, loss[epoch]))
         res = {'U': U, 'V': V, 'loss': loss}
         return res
 
