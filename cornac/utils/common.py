@@ -5,23 +5,7 @@
          Quoc-Tuan Truong <tuantq.vnu@gmail.com>
 """
 
-
-
-import operator
 import numpy as np
-
-
-def which_(a, op, x):
-    ops = {'>': operator.gt,
-           '<': operator.lt,
-           '>=': operator.ge,
-           '<=': operator.le,
-           '==': operator.eq,
-           '!=': operator.ne}
-
-    i = np.array(range(0, len(a)))
-
-    return i[ops[op](a, x)]
 
 
 def sigmoid(x):
@@ -145,3 +129,10 @@ def validate_format(input_format, valid_formats):
         raise ValueError('{} data format is not in valid formats ({})'.format(input_format, valid_formats))
 
     return input_format
+
+
+def estimate_batches(input_size, batch_size):
+    """
+    Estimate number of batches give `input_size` and `batch_size`
+    """
+    return int(np.ceil(input_size / batch_size))

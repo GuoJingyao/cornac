@@ -6,6 +6,10 @@
 import numpy as np
 from ..recommender import Recommender
 from .pcrl import PCRL_
+import scipy.sparse as sp
+from ...exception import ScoreException
+
+
 
 
 # Recommender class for Probabilistic Collaborative Representation Learning (PCRL)
@@ -30,9 +34,8 @@ class PCRL(Recommender):
     learning_rate: float, optional, default: 0.001
         The learning rate for SGD.
 
-    aux_info: csc sparse matrix, required
-        The item auxiliary information matrix, item-context in the PCRL's paper, \
-        in the scipy csc sparse format.
+    aux_info: see "cornac/examples/pcrl_example.py" in the GitHub repo for an example of how to use \
+        cornac's graph module provide item auxiliary data (e.g., context, text, etc.) for PCRL.
 
     name: string, optional, default: 'PCRL'
         The name of the recommender model.
@@ -63,13 +66,11 @@ class PCRL(Recommender):
     In UAI 2018.
     """
 
-    def __init__(self, k=100, z_dims=[300], max_iter=300, batch_size=300, learning_rate=0.001, aux_info=None,
-                 name="pcrl", trainable=True, w_determinist=True,
-                 init_params={'G_s': None, 'G_r': None, 'L_s': None, 'L_r': None}):
+    def __init__(self, k=100, z_dims = [300], max_iter=300, batch_size = 300,learning_rate = 0.001, name = "pcrl", trainable = True,
+                 verbose=False, w_determinist = True, init_params = {'G_s':None, 'G_r':None, 'L_s':None, 'L_r':None}):
 
-        Recommender.__init__(self, name=name, trainable=trainable)
+        Recommender.__init__(self, name=name, trainable=trainable, verbose=verbose)
 
-        self.aux_info = aux_info
         self.k = k
         self.z_dims = z_dims  # the dimension of the second hidden layer (we consider a 2-layers PCRL)
         self.max_iter = max_iter
@@ -77,31 +78,39 @@ class PCRL(Recommender):
         self.learning_rate = learning_rate
         self.init_params = init_params
         self.w_determinist = w_determinist
-
-    # fit the recommender model to the traning data
-    def fit(self, X):
+        
+        
+    #fit the recommender model to the traning data    
+    def fit(self, train_set):
         """Fit the model to observations.
 
         Parameters
         ----------
-        X: scipy sparse matrix, required
-            the user-item preference matrix (traning data), in a scipy sparse format\
-            (e.g., csc_matrix).
+        train_set: object of type TrainSet, required
+            An object contraining the user-item preference in csr scipy sparse format,\
+            as well as some useful attributes such as mappings to the original user/item ids.\
+            Please refer to the class TrainSet in the "data" module for details.
         """
+
+        Recommender.fit(self, train_set)
+        X = sp.csc_matrix(self.train_set.matrix)
+        
         if self.trainable:
             # intanciate pcrl
-            pcrl_ = PCRL_(cf_data=X, aux_data=self.aux_info, k=self.k, z_dims=self.z_dims, n_epoch=self.max_iter,
+
+            train_aux_info = train_set.item_graph.matrix[:self.train_set.num_items, :self.train_set.num_items]
+            pcrl_ = PCRL_(cf_data=X, aux_data=train_aux_info, k=self.k, z_dims=self.z_dims, n_epoch=self.max_iter,
                           batch_size=self.batch_size, learning_rate=self.learning_rate, B=1,
                           w_determinist=self.w_determinist, init_params=self.init_params)
-            pcrl_.learn()
+            pcrl_.learn()                      
+            self.Theta = np.array(pcrl_.Gs)/np.array(pcrl_.Gr)
+            self.Beta = np.array(pcrl_.Ls)/np.array(pcrl_.Lr)
+        elif self.verbose:
+            print('%s is trained already (trainable = False)' % (self.name))             
 
-            self.Theta = np.array(pcrl_.Gs) / np.array(pcrl_.Gr)
-            self.Beta = np.array(pcrl_.Ls) / np.array(pcrl_.Lr)
-        else:
-            print('%s is trained already (trainable = False)' % (self.name))
-
+      
     def score(self, user_id, item_id=None):
-        """Predict the scores/ratings of a user for an item.
+        """Predict the scores/ratings of a user for a list of items.
 
         Parameters
         ----------

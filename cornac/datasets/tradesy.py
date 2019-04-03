@@ -12,23 +12,30 @@ This data is used in the VBPR paper. After cleaning the data, we have:
 """
 
 from ..utils import cache
-from ..data import reader
+from ..data import Reader
+from ..data.reader import read_text
+from typing import List
+import numpy as np
 
-import pickle
 
-
-def load_data():
+def load_data(reader: Reader = None) -> List:
     """Load the feedback observations
+
+    Parameters
+    ----------
+    reader: `obj:cornac.data.Reader`, default: None
+        Reader object used to read the data.
 
     Returns
     -------
     data: array-like
-        Data in the form of a list of tuples (user, item , feedback).
+        Data in the form of a list of tuples (user, item, 1).
 
     """
-    fpath = cache(url='https://static.preferred.ai/cornac/datasets/tradesy/data.zip',
-                  unzip=True, relative_path='tradesy/data.csv')
-    return reader.read_uir(fpath, sep=',', skip_lines=1)
+    fpath = cache(url='https://static.preferred.ai/cornac/datasets/tradesy/users.zip',
+                  unzip=True, relative_path='tradesy/users.csv')
+    reader = Reader() if reader is None else reader
+    return reader.read(fpath, fmt='UI', sep=',')
 
 
 def load_feature():
@@ -36,11 +43,14 @@ def load_feature():
 
     Returns
     -------
-    data: dict
-        Item-feature dictionary. Each feature vector is a Numpy array of size 4096.
+    features: numpy.ndarray
+        Feature matrix with shape (n, 4096) with n is the number of items.
 
+    item_ids: List
+        List of item ids aligned with indices in `features`.
     """
-    fpath = cache(url='https://static.preferred.ai/cornac/datasets/tradesy/item_feature.zip',
-                  unzip=True, relative_path='tradesy/item_feature.pkl')
-    with open(fpath, 'rb') as f:
-        return pickle.load(f)
+    features = np.load(cache(url='https://static.preferred.ai/cornac/datasets/tradesy/item_features.zip',
+                             unzip=True, relative_path='tradesy/item_features.npy'))
+    item_ids = read_text(cache(url='https://static.preferred.ai/cornac/datasets/tradesy/item_ids.zip',
+                               unzip=True, relative_path='tradesy/item_ids.txt'))
+    return features, item_ids

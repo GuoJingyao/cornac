@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# cython: language_level=3
 
 """
 @author: Quoc-Tuan Truong <tuantq.vnu@gmail.com>
@@ -6,19 +7,18 @@
 
 from cornac.exception import ScoreException
 from cornac.models.recommender import Recommender
-
+from cornac.utils import fast_dot
+from cornac.utils.common import scale
+import multiprocessing
+import tqdm
 import numpy as np
 cimport cython
 from cython cimport floating, integral
-import multiprocessing
-import tqdm
-
 from cython.parallel import parallel, prange
 from libc.math cimport exp
 from libcpp cimport bool
 from libcpp.vector cimport vector
 from libcpp.algorithm cimport binary_search
-
 
 
 cdef extern from "<random>" namespace "std":
@@ -87,6 +87,9 @@ class BPR(Recommender):
     verbose: boolean, optional, default: True
         When True, some running logs are displayed.
 
+    init_params: dictionary, optional, default: None
+        Initial parameters, e.g., init_params = {'U': user_factors, 'V': item_factors, 'Bi': item_biases}
+
     References
     ----------
     * Rendle, Steffen, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. \
@@ -94,21 +97,18 @@ class BPR(Recommender):
     """
 
     def __init__(self, k=10, max_iter=100, learning_rate=0.01, lambda_reg=0.01, num_threads=0,
-                 trainable=True, verbose=True, **kwargs):
+                 trainable=True, verbose=False, init_params=None):
         Recommender.__init__(self, name='BPR', trainable=trainable, verbose=verbose)
         self.factors = k
         self.max_iter = max_iter
         self.learning_rate = learning_rate
         self.lambda_reg = lambda_reg
+        self.init_params = {} if init_params is None else init_params
 
         if num_threads > 0 and num_threads < multiprocessing.cpu_count():
             self.num_threads = num_threads
         else:
             self.num_threads = multiprocessing.cpu_count()
-
-        self.u_factors = kwargs.get('u_factors', None)  # matrix of user factors
-        self.i_factors = kwargs.get('i_factors', None)  # matrix of item factors
-        self.i_biases = kwargs.get('i_biases', None)  # vector of item biases
 
     @cython.cdivision(True)
     @cython.boundscheck(False)
@@ -129,16 +129,17 @@ class BPR(Recommender):
             print('%s is trained already (trainable = False)' % (self.name))
             return
 
-        X = train_set.matrix.tocsr()
-        if not X.has_sorted_indices:
-            X.sort_indices()
-
-        num_users, num_items = train_set.matrix.shape
+        X = train_set.matrix
+        num_users, num_items = X.shape
 
         # this basically calculates the 'row' attribute of a COO matrix
         # without requiring us to get the whole COO matrix
         user_counts = np.ediff1d(X.indptr)
         user_ids = np.repeat(np.arange(num_users), user_counts).astype(X.indices.dtype)
+
+        self.u_factors = self.init_params.get('U', None)  # matrix of user factors
+        self.i_factors = self.init_params.get('V', None)  # matrix of item factors
+        self.i_biases = self.init_params.get('Bi', None)  # vector of item biases
 
         # create factors if not already created.
         if self.u_factors is None:
@@ -171,6 +172,7 @@ class BPR(Recommender):
         """Fit the model parameters (U, V, B) with SGD
         """
         cdef long num_samples = len(user_ids), s, i_index, j_index, correct, skipped
+        cdef long num_items = self.train_set.num_items
         cdef integral f, i_id, j_id, thread_id
         cdef floating z, score, temp
 
@@ -183,7 +185,8 @@ class BPR(Recommender):
         cdef floating * item_i
         cdef floating * item_j
 
-        cdef RNGVector rng = RNGVector(num_threads, num_samples - 1)
+        cdef RNGVector rng_i = RNGVector(num_threads, num_samples - 1)
+        cdef RNGVector rng_j = RNGVector(num_threads, num_items - 1)
 
         progress = tqdm.trange(self.max_iter, disable=not self.verbose)
         for epoch in progress:
@@ -191,14 +194,12 @@ class BPR(Recommender):
             skipped = 0
 
             with nogil, parallel(num_threads=num_threads):
-
                 thread_id = get_thread_num()
-                for s in prange(num_samples, schedule='guided'):
-                    i_index = rng.generate(thread_id)
-                    i_id = item_ids[i_index]
 
-                    j_index = rng.generate(thread_id)
-                    j_id = item_ids[j_index]
+                for s in prange(num_samples, schedule='guided'):
+                    i_index = rng_i.generate(thread_id)
+                    i_id = item_ids[i_index]
+                    j_id = rng_j.generate(thread_id)
 
                     # if the user has liked the item j, skip this for now
                     if has_non_zero(indptr, item_ids, user_ids[i_index], j_id):
@@ -218,7 +219,7 @@ class BPR(Recommender):
                         correct += 1
 
                     # update the factors via sgd.
-                    for f in range(factors):
+                    for f in prange(factors):
                         temp = user[f]
                         user[f] += lr * (z * (item_i[f] - item_j[f]) - reg * user[f])
                         item_i[f] += lr * (z * temp - reg * item_i[f])
@@ -258,15 +259,14 @@ class BPR(Recommender):
         if item_id is None:
             known_item_scores = self.i_biases
             if not unk_user:
-                known_item_scores += np.dot(self.i_factors, self.u_factors[user_id])
-
+                fast_dot(self.u_factors[user_id], self.i_factors, known_item_scores)
             return known_item_scores
         else:
             if self.train_set.is_unk_item(item_id):
                 raise ScoreException("Can't make score prediction for (user_id=%d, item_id=%d)" % (user_id, item_id))
-
             item_score = self.i_biases[item_id]
             if not unk_user:
                 item_score += np.dot(self.u_factors[user_id], self.i_factors[item_id])
-
+            if self.train_set.min_rating != self.train_set.max_rating:
+                item_score = scale(item_score, self.train_set.min_rating, self.train_set.max_rating, 0., 1.)
             return item_score

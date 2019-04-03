@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 
 """
-@author: Aghiles Salah
+@author: Aghiles Salah <asalah@smu.edu.sg>
          Quoc-Tuan Truong <tuantq.vnu@gmail.com>
 """
 
-from .result import Result
-from .cv_result import CVResult
+from .result import ExperimentResult
+from .result import CVExperimentResult
+from ..metrics.rating import RatingMetric
+from ..metrics.ranking import RankingMetric
+from ..models.recommender import Recommender
 
 
 class Experiment:
@@ -42,6 +45,7 @@ class Experiment:
         self.metrics = self._validate_metrics(metrics)
         self.user_based = user_based
         self.verbose = verbose
+<<<<<<< HEAD
         self.results = Result()
         from ..eval_methods.ratio_split import RatioSplit
         from ..eval_methods.cross_validation import CrossValidation
@@ -49,19 +53,19 @@ class Experiment:
             self.results = Result()
         elif isinstance(eval_method, CrossValidation):
             self.results = CVResult(eval_method.n_folds)
+=======
+        self.result = None
+>>>>>>> upstream/master
 
     @staticmethod
     def _validate_models(input_models):
         if not hasattr(input_models, "__len__"):
             raise ValueError('models have to be an array but {}'.format(type(input_models)))
 
-        from ..models.recommender import Recommender
-
         valid_models = []
         for model in input_models:
             if isinstance(model, Recommender):
                 valid_models.append(model)
-
         return valid_models
 
     @staticmethod
@@ -69,40 +73,24 @@ class Experiment:
         if not hasattr(input_metrics, "__len__"):
             raise ValueError('metrics have to be an array but {}'.format(type(input_metrics)))
 
-        from ..metrics.rating import RatingMetric
-        from ..metrics.ranking import RankingMetric
-
         valid_metrics = []
         for metric in input_metrics:
             if isinstance(metric, RatingMetric) or isinstance(metric, RankingMetric):
                 valid_metrics.append(metric)
-
         return valid_metrics
 
-    # Check depth of dictionary
-    def dict_depth(self, d):
-        if isinstance(d, dict):
-            return 1 + (max(map(self.dict_depth, d.values())) if d else 0)
-        return 0
+    def _create_result(self):
+        from ..eval_methods.cross_validation import CrossValidation
+        if isinstance(self.eval_method, CrossValidation):
+            self.result = CVExperimentResult()
+        else:
+            self.result = ExperimentResult()
 
-    # modify this function to accommodate several models
     def run(self):
-        model_names = []
-        metric_names = []
-        organized_metrics = {'ranking': [], 'rating': []}
-
-        # Organize metrics into "rating" and "ranking" for efficiency purposes
-        for mt in self.metrics:
-            organized_metrics[mt.type].append(mt)
-            metric_names.append(mt.name)
-
+        self._create_result()
         for model in self.models:
-            if self.verbose:
-                print(model.name)
-
-            model_names.append(model.name)
-            model_res = self.eval_method.evaluate(model=model, metrics=organized_metrics, user_based=self.user_based)
-            model_res._organize_avg_res(model_name=model.name, metric_names=metric_names)
-            self.results._add_model_res(res=model_res, model_name=model.name)
-
-        self.results.show()
+            model_result = self.eval_method.evaluate(model=model,
+                                                     metrics=self.metrics,
+                                                     user_based=self.user_based)
+            self.result.append(model_result)
+        print('\n{}'.format(self.result))

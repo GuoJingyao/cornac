@@ -4,29 +4,47 @@
 @author: Quoc-Tuan Truong <tuantq.vnu@gmail.com>
 """
 
-from cornac.data import Module
+import unittest
 import numpy as np
-
-def test_init():
-    md = Module()
-    md.build(ordered_ids=None)
-    assert md.data_feature is None
-
-    id_feature = {'a': np.zeros(10)}
-    md = Module(id_feature=id_feature, normalized=True)
-    md.build(ordered_ids=['a'])
-
-    assert md.data_feature.shape[0] == 1
-    assert md.data_feature.shape[1] == 10
-    assert md.feature_dim == 10
-    assert len(md._id_feature) == 0
+from collections import OrderedDict
+from cornac.data import FeatureModule
 
 
-def test_batch_feature():
-    id_feature = {'a': np.zeros(10)}
-    md = Module(id_feature=id_feature, normalized=True)
-    md.build(ordered_ids=['a'])
+class TestFeatureModule(unittest.TestCase):
 
-    b = md.batch_feature(batch_ids=[0])
-    assert b.shape[0] == 1
-    assert b.shape[1] == 10
+    def setUp(self):
+        self.id_feature = {'a': np.zeros(10),
+                           'b': np.ones(10)}
+
+    def test_init(self):
+        md = FeatureModule()
+        md.build(id_map=None)
+        self.assertIsNone(md.features)
+
+        md = FeatureModule(features=np.asarray(list(self.id_feature.values())),
+                           ids=self.id_feature.keys(),
+                           normalized=True)
+
+        global_iid_map = OrderedDict()
+        global_iid_map.setdefault('a', len(global_iid_map))
+        md.build(id_map=global_iid_map)
+
+        self.assertEqual(md.features.shape[0], 2)
+        self.assertEqual(md.features.shape[1], 10)
+        self.assertEqual(md.feature_dim, 10)
+
+    def test_batch_feature(self):
+        md = FeatureModule(features=np.asarray(list(self.id_feature.values())),
+                           ids=self.id_feature.keys(),
+                           normalized=True)
+
+        global_iid_map = OrderedDict({'a': 0, 'b': 1})
+        md.build(id_map=global_iid_map)
+
+        b = md.batch_feature(batch_ids=[0])
+        self.assertEqual(b.shape[0], 1)
+        self.assertEqual(b.shape[1], 10)
+
+
+if __name__ == '__main__':
+    unittest.main()

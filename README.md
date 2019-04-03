@@ -6,6 +6,8 @@
 
 [Website](https://cornac.preferred.ai/) |
 [Documentation](https://cornac.readthedocs.io/en/latest/index.html) |
+[Models](https://github.com/PreferredAI/cornac/tree/master/cornac/models#models) |
+[Examples](https://github.com/PreferredAI/cornac/tree/master/examples#cornac-examples-directory) |
 [Preferred.AI](https://preferred.ai/)
 
 [![TravisCI](https://img.shields.io/travis/PreferredAI/cornac/master.svg?logo=travis)](https://www.travis-ci.org/PreferredAI/cornac)
@@ -23,24 +25,23 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
-
 ## Installation
 
 Currently, we are supporting Python 3 (version 3.6 is recommended). There are several ways to install Cornac:
 
-- **From PyPI (you may need a C++ compiler):**
+  - **From PyPI (you may need a C++ compiler):**
 
 ```sh
 pip3 install cornac
 ```
 
-- **From Anaconda:**
+  - **From Anaconda:**
 
 ```sh
 conda install cornac -c qttruong -c pytorch
 ```
 
-- **From the GitHub source (for latest updates):**
+  - **From the GitHub source (for latest updates):**
 
 ```sh
 pip3 install Cython
@@ -53,7 +54,7 @@ python3 setup.py install
 
 Additional dependencies required by models are listed [here](cornac/models/README.md).
 
-Some of the algorithms use `OpenMP` to speed up training with multithreading. For OSX users, in order to run those algorithms efficiently, you might need to install `gcc` from Homebrew to have an OpenMP compiler and install Cornac from source:
+Some of the algorithms use `OpenMP` to support multi-threading. For OSX users, in order to run those algorithms efficiently, you might need to install `gcc` from Homebrew to have an OpenMP compiler:
 
 ```sh
 brew install gcc | brew link gcc
@@ -61,61 +62,70 @@ brew install gcc | brew link gcc
 
 If you want to utilize your GPUs, you might consider:
 
-- [TensorFlow installation instructions](https://www.tensorflow.org/install/).
-- [PyTorch installation instructions](https://pytorch.org/get-started/locally/).
-- [cuDNN](https://docs.nvidia.com/deeplearning/sdk/cudnn-install/) (for Nvidia GPUs).
+  - [TensorFlow installation instructions](https://www.tensorflow.org/install/).
+  - [PyTorch installation instructions](https://pytorch.org/get-started/locally/).
+  - [cuDNN](https://docs.nvidia.com/deeplearning/sdk/cudnn-install/) (for Nvidia GPUs).
 
 ## Getting started: your first Cornac experiment
 
 ![](exp-flow.jpg)
 <p align="center"><i>Flow of an Experiment in Cornac</i></p>
 
-This example will show you how to run your very first experiment.
+Load the built-in [MovieLens 100K](https://grouplens.org/datasets/movielens/100k/) dataset (will be downloaded if not cached):
 
-- Load the [MovieLens 100K](https://grouplens.org/datasets/movielens/100k/) dataset (will be automatically downloaded if not cached).
 ```python
 from cornac.datasets import movielens
 
 ml_100k = movielens.load_100k()
 ```
 
-- Instantiate an evaluation method. Here we split the data based on ratio.
+Split the data based on ratio:
+
 ```python
 from cornac.eval_methods import RatioSplit
 
-ratio_split = RatioSplit(data=ml_100k, test_size=0.2, rating_threshold=4.0, exclude_unknowns=False)
+ratio_split = RatioSplit(data=ml_100k, test_size=0.2, rating_threshold=4.0, seed=123)
 ```
 
-- Instantiate models that we want to evaluate. Here we use `Probabilistic Matrix Factorization (PMF)` as an example.
+Here we are comparing `Biased MF`, `PMF`, and `BPR`:
+  
 ```python
-import cornac
+from cornac.models import MF, PMF, BPR
 
-pmf = cornac.models.PMF(k=10, max_iter=100, learning_rate=0.001, lamda=0.001)
+mf = MF(k=10, max_iter=25, learning_rate=0.01, lambda_reg=0.02, use_bias=True)
+pmf = PMF(k=10, max_iter=100, learning_rate=0.001, lamda=0.001)
+bpr = BPR(k=10, max_iter=200, learning_rate=0.01, lambda_reg=0.01)
 ```
 
-- Instantiate evaluation metrics.
+Define metrics used to evaluate the models:
+  
 ```python
 mae = cornac.metrics.MAE()
 rmse = cornac.metrics.RMSE()
 rec_20 = cornac.metrics.Recall(k=20)
-pre_20 = cornac.metrics.Precision(k=20)
+ndcg_20 = cornac.metrics.NDCG(k=20)
+auc = cornac.metrics.AUC()
 ```
 
-- Instantiate and then run an experiment.
+Put everything together into an experiment and run it:
+  
 ```python
-exp = cornac.Experiment(eval_method=ratio_split,
-                        models=[pmf],
-                        metrics=[mae, rmse, rec_20, pre_20],
-                        user_based=True)
+from cornac import Experiment
+
+exp = Experiment(eval_method=ratio_split,
+                 models=[mf, pmf, bpr],
+                 metrics=[mae, rmse, rec_20, ndcg_20, auc],
+                 user_based=True)
 exp.run()
 ```
 
 **Output:**
 
-```
-          MAE      RMSE  Recall@20  Precision@20
-PMF  0.760277  0.919413   0.081803        0.0462
-```
+|     |    MAE |   RMSE | Recall@20 | NDCG@20 |    AUC | Train (s) | Test (s) |
+| --- | -----: | -----: | --------: | ------: | -----: | --------: | -------: |
+| [MF](cornac/models/mf)  | 0.7441 | 0.9007 |    0.0622 |  0.0534 | 0.2952 |    0.0791 |   1.3119 |
+| [PMF](cornac/models/pmf) | 0.7490 | 0.9093 |    0.0831 |  0.0683 | 0.4660 |    8.7645 |   2.1569 |
+| [BPR](cornac/models/bpr) | 1.5595 | 1.8864 |    0.0744 |  0.0657 | 0.5932 |    2.4791 |   1.2956 |
 
 For more details, please take a look at our [examples](examples).
 
@@ -126,8 +136,8 @@ The recommender models supported by Cornac are listed [here](cornac/models/READM
 ## Support
 
 Your contributions at any level of the library are welcome. If you intend to contribute, please:
-- Fork the Cornac repository to your own account.
-- Make changes and create pull requests.
+  - Fork the Cornac repository to your own account.
+  - Make changes and create pull requests.
 
 You can also post bug reports and feature requests in [GitHub issues](https://github.com/PreferredAI/cornac/issues).
 

@@ -4,18 +4,28 @@
 @author: Quoc-Tuan Truong <tuantq.vnu@gmail.com>
 """
 
+import unittest
 from cornac.data import ImageModule
 
-def test_init():
-    md = ImageModule()
-    md.build(ordered_ids=None)
 
-    assert md.data_image is None
-    assert md.data_path is None
+class TestImageModule(unittest.TestCase):
+
+    def test_init(self):
+        md = ImageModule()
+        md.build(id_map=None)
+
+        self.assertIsNone(md.images)
+        self.assertIsNone(md.paths)
+
+    def batch_image(self):
+        md = ImageModule()
+        md.build(id_map=None)
+
+        try:
+            md.batch_image(batch_ids=None)
+        except:
+            raise NotImplementedError
 
 
-def batch_image():
-    md = ImageModule()
-    md.build(ordered_ids=None)
-
-    md.batch_image(batch_ids=None)
+if __name__ == '__main__':
+    unittest.main()

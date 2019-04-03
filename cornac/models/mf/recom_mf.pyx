@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# cython: language_level=3
 
 """
 @author: Quoc-Tuan Truong <tuantq.vnu@gmail.com>
@@ -6,14 +7,15 @@
 
 from cornac.models.recommender import Recommender
 from cornac.exception import ScoreException
+from cornac.utils import fast_dot
 import tqdm
-
 import numpy as np
-
 cimport cython
+from cython.parallel import prange
 from cython cimport floating, integral
 from libcpp cimport bool
 from libc.math cimport abs
+
 
 class MF(Recommender):
     """Matrix Factorization.
@@ -44,6 +46,10 @@ class MF(Recommender):
     verbose: boolean, optional, default: True
         When True, running logs are displayed.
 
+    init_params: dictionary, optional, default: None
+        Initial parameters, e.g., init_params = {'U': user_factors, 'V': item_factors,
+        'Bu': user_biases, 'Bi': item_biases}
+
     References
     ----------
     * Koren, Y., Bell, R., & Volinsky, C. Matrix factorization techniques for recommender systems. \
@@ -51,8 +57,8 @@ class MF(Recommender):
     """
 
     def __init__(self, k=10, max_iter=20, learning_rate=0.01, lambda_reg=0.02, use_bias=True, early_stop=False,
-                 trainable=True, verbose=True, **kwargs):
-        Recommender.__init__(self, name='MF', verbose=verbose)
+                 trainable=True, verbose=False, init_params=None):
+        Recommender.__init__(self, name='MF', trainable=trainable, verbose=verbose)
 
         self.k = k
         self.max_iter = max_iter
@@ -60,11 +66,7 @@ class MF(Recommender):
         self.lambda_reg = lambda_reg
         self.use_bias = use_bias
         self.early_stop = early_stop
-
-        self.u_factors = kwargs.get('u_factors', None)  # matrix of user factors
-        self.i_factors = kwargs.get('i_factors', None)  # matrix of item factors
-        self.u_biases = kwargs.get('u_biases', None)  # vector of user biases
-        self.i_biases = kwargs.get('i_biases', None)  # vector of item biases
+        self.init_params = {} if init_params is None else init_params
 
     def fit(self, train_set):
         """Fit the model to observations.
@@ -82,6 +84,11 @@ class MF(Recommender):
             print('%s is trained already (trainable = False)' % (self.name))
             return
 
+        self.u_factors = self.init_params.get('U', None)
+        self.i_factors = self.init_params.get('V', None)
+        self.u_biases = self.init_params.get('Bu', None)
+        self.i_biases = self.init_params.get('Bi', None)
+
         if self.u_factors is None:
             self.u_factors = np.random.normal(size=[train_set.num_users, self.k], loc=0., scale=0.01).astype(np.float32)
         if self.i_factors is None:
@@ -94,7 +101,6 @@ class MF(Recommender):
         self.global_mean = train_set.global_mean if self.use_bias else 0.
 
         (rid, cid, val) = train_set.uir_tuple
-
         self._fit_sgd(rid, cid, val.astype(np.float32),
                       self.u_factors, self.i_factors, self.u_biases, self.i_biases)
 
@@ -105,11 +111,11 @@ class MF(Recommender):
                  floating[:, :] U, floating[:, :] V, floating[:] Bu, floating[:] Bi):
         """Fit the model parameters (U, V, Bu, Bi) with SGD
         """
-        cdef integral num_users = self.train_set.num_users
-        cdef integral num_items = self.train_set.num_items
+        cdef long num_users = self.train_set.num_users
+        cdef long num_items = self.train_set.num_items
+        cdef long num_ratings = val.shape[0]
         cdef integral num_factors = self.k
         cdef integral max_iter = self.max_iter
-        cdef integral num_ratings = val.shape[0]
 
         cdef floating reg = self.lambda_reg
         cdef floating mu = self.global_mean
@@ -132,20 +138,20 @@ class MF(Recommender):
             last_loss = loss
             loss = 0
 
-            for j in range(num_ratings):
+            for j in prange(num_ratings, nogil=True):
                 u, i, r = rid[j], cid[j], val[j]
                 user, item = &U[u, 0], &V[i, 0]
 
                 # predict rating
                 r_pred = mu + Bu[u] + Bi[i]
-                for f in range(num_factors):
+                for f in prange(num_factors):
                     r_pred += user[f] * item[f]
 
                 error = r - r_pred
                 loss += error * error
 
                 # update factors
-                for f in range(num_factors):
+                for f in prange(num_factors):
                     u_f, i_f = user[f], item[f]
                     user[f] += lr * (error * i_f - reg * u_f)
                     item[f] += lr * (error * u_f - reg * i_f)
@@ -193,12 +199,10 @@ class MF(Recommender):
             known_item_scores = np.add(self.i_biases, self.global_mean)
             if not unk_user:
                 known_item_scores = np.add(known_item_scores, self.u_biases[user_id])
-                known_item_scores += np.dot(self.i_factors, self.u_factors[user_id])
-
+                fast_dot(self.u_factors[user_id], self.i_factors, known_item_scores)
             return known_item_scores
         else:
             unk_item = self.train_set.is_unk_item(item_id)
-
             if self.use_bias:
                 item_score = self.global_mean
                 if not unk_user:
@@ -211,5 +215,4 @@ class MF(Recommender):
                 if unk_user or unk_item:
                     raise ScoreException("Can't make score prediction for (user_id=%d, item_id=%d)" % (user_id, item_id))
                 item_score = np.dot(self.u_factors[user_id], self.i_factors[item_id])
-
             return item_score

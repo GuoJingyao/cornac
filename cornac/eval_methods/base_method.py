@@ -13,10 +13,11 @@ from ..utils.common import validate_format
 from ..metrics.rating import RatingMetric
 from ..experiment.result import SingleModelResult
 from ..metrics.ranking import RankingMetric
-from collections import OrderedDict
+from ..experiment.result import Result
+from collections import OrderedDict, defaultdict
 import numpy as np
 import tqdm
-
+import time
 
 VALID_DATA_FORMATS = ['UIR', 'UIRT']
 
@@ -30,6 +31,7 @@ class BaseMethod:
     data_format: str, default: 'UIR'
         The format of given data.
     total_users: int, optional, default: None
+<<<<<<< HEAD
         Total number of unique users in the data including train, val, and test sets
     total_users: int, optional, default: None
         Total number of unique items in the data including train, val, and test sets
@@ -38,18 +40,31 @@ class BaseMethod:
         e.g, if the ratings are in {1, ..., 5}, then good_rating = 4.
     exclude_unknowns: bool, optional, default: False
         Ignore unknown users and items (cold-start) during evaluation and testing
+=======
+        Total number of unique users in the data including train, val, and test sets.
+
+    total_users: int, optional, default: None
+        Total number of unique items in the data including train, val, and test sets.
+
+    rating_threshold: float, optional, default: 1.0
+        The threshold to convert ratings into positive or negative feedback for ranking metrics.
+
+    exclude_unknowns: bool, optional, default: False
+        Ignore unknown users and items (cold-start) during evaluation.
+
+>>>>>>> upstream/master
     verbose: bool, optional, default: False
         Output running log
     """
 
     def __init__(self, data=None,
-                 data_format='UIR',
+                 fmt='UIR',
                  rating_threshold=1.0,
                  exclude_unknowns=False,
                  verbose=False,
                  **kwargs):
         self._data = data
-        self.data_format = validate_format(data_format, VALID_DATA_FORMATS)
+        self.data_format = validate_format(fmt, VALID_DATA_FORMATS)
         self.train_set = None
         self.test_set = None
         self.val_set = None
@@ -184,15 +199,24 @@ class BaseMethod:
         for user_module in [self.user_text, self.user_image, self.user_graph]:
             if user_module is None:
                 continue
+<<<<<<< HEAD
             user_module.build(global_id_map=self.global_uid_map)
+=======
+            user_module.build(id_map=self.global_uid_map)
+>>>>>>> upstream/master
 
         for item_module in [self.item_text, self.item_image, self.item_graph]:
             if item_module is None:
                 continue
+<<<<<<< HEAD
             item_module.build(global_id_map=self.global_iid_map)
+=======
+            item_module.build(id_map=self.global_iid_map)
+>>>>>>> upstream/master
 
         for data_set in [self.train_set, self.test_set, self.val_set]:
-            if data_set is None: continue
+            if data_set is None:
+                continue
             data_set.add_modules(user_text=self.user_text,
                                  user_image=self.user_image,
                                  user_graph=self.user_graph,
@@ -228,21 +252,23 @@ class BaseMethod:
             raise ValueError('test_set is required but None!')
 
         if self.verbose:
-            print("\nTraining started!")
-
+            print('\n[{}] Training started!'.format(model.name))
+        start = time.time()
         model.fit(self.train_set)
+        train_time = time.time() - start
 
         if self.verbose:
-            print("\nEvaluation started!")
+            print('\n[{}] Evaluation started!'.format(model.name))
+        start = time.time()
 
         all_pd_ratings = []
         all_gt_ratings = []
 
-        metric_user_results = {}
+        metric_user_results = defaultdict()
         for mt in (rating_metrics + ranking_metrics):
             metric_user_results[mt.name] = {}
 
-        for user_id in tqdm.tqdm(self.test_set.get_users(), disable=not self.verbose):
+        for user_id in tqdm.tqdm(self.test_set.users, disable=not self.verbose):
             # ignore unknown users when self.exclude_unknown
             if self.exclude_unknowns and self.train_set.is_unk_user(user_id):
                 continue
@@ -298,7 +324,7 @@ class BaseMethod:
                                           pd_scores=item_scores)
                     metric_user_results[mt.name][user_id] = mt_score
 
-        metric_avg_results = {}
+        metric_avg_results = OrderedDict()
 
         # avg results of rating metrics
         for mt in rating_metrics:
@@ -314,7 +340,16 @@ class BaseMethod:
             user_results = list(metric_user_results[mt.name].values())
             metric_avg_results[mt.name] = np.mean(user_results)
 
+<<<<<<< HEAD
         return SingleModelResult(metric_avg_results, metric_user_results)
+=======
+        test_time = time.time() - start
+
+        metric_avg_results['Train (s)'] = train_time
+        metric_avg_results['Test (s)'] = test_time
+
+        return Result(model.name, metric_avg_results, metric_user_results)
+>>>>>>> upstream/master
 
     @classmethod
     def from_splits(cls, train_data, test_data, val_data=None, data_format='UIR',
