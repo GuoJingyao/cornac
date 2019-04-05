@@ -36,7 +36,7 @@ def sorec(train_set, l, n_epochs=100, learning_rate=0.001, lamda_C=10, lamda=0.0
     # rowind = np.array(graph.map_data[:, 0])[index]
     # colind = np.array(graph.map_data[:, 1])[index]
 
-    trust_matrix =scipy.sparse.csc_matrix((weighted_trust, (graph.map_data[:, 0], graph.map_data[:, 1])), shape=(user_n, user_n))
+    trust_matrix =scipy.sparse.csr_matrix((weighted_trust, (graph.map_data[:, 0], graph.map_data[:, 1])), shape=(user_n, user_n))
     # t_matrix = scipy.sparse.csc_matrix((w_trust, (rowind, colind)), shape=(n, n)).todense()
     # t_matrix = torch.tensor(t_matrix,dtype=torch.float32)
     # mask = scipy.sparse.csc_matrix((np.ones(len(w_trust)), (rowind, colind)), shape=(n, n)).todense()
@@ -75,21 +75,26 @@ def sorec(train_set, l, n_epochs=100, learning_rate=0.001, lamda_C=10, lamda=0.0
 
         for uid, iid, val in train_set.uir_iter(1000, shuffle=True):
 
-            u_nid = []
-            l = 0
-            for u in uid:
-                _, utrust, trustvalue = scipy.sparse.find(trust_matrix.getrow(u))
-                u_nid.extend(utrust.tolist())
-                if len(utrust)>0:
-                    u_nid.extend(utrust.tolist())
-                    l += (torch.sigmoid(U[:, u].matmul(Z[:, utrust.tolist()])) - torch.tensor(trustvalue,
-                                                                                              dtype=torch.float32)).pow(
-                        2).sum()
+            trust_tensor = torch.tensor(trust_matrix[uid].A, dtype=torch.float32)
+            mask = (trust_tensor > 0).float() * 1
+
+            l = (mask * (torch.sigmoid(torch.t(U[:, uid]).mm(Z)) - trust_tensor)).pow(2).sum()
+
+            # torch.sparse.mm(trust_tensor, mat2)
+            # for u in uid:
+            #     ptr1, ptr2 = trust_matrix.indptr[u], trust_matrix.indptr[u + 1]
+            #     utrust = trust_matrix.indices[ptr1:ptr2]
+            #     trustvalue = trust_matrix.data[ptr1:ptr2]
+            #     # _, utrust, trustvalue = scipy.sparse.find(trust_matrix[u])
+            #     # u_nid.extend(utrust.tolist())
+            #     if len(utrust)>0:
+            #         u_nid.extend(utrust.tolist())
+            #         l += (torch.sigmoid(U[:, u].matmul(Z[:, utrust.astype(int)]))
+            #               - torch.tensor(trustvalue, dtype=torch.float32)).pow(2).sum()
 
             loss = (torch.sigmoid(U[:, uid].mul(V[:, iid]).sum(0)) - torch.tensor(val, dtype=torch.float32)).pow(2).sum() + \
                    l * lamda_C + \
-                   lamda * (V[:, iid].norm().pow(2) + U[:, uid].norm().pow(2) + Z[:, u_nid].norm().pow(2))
-
+                   lamda * (V[:, iid].norm().pow(2) + U[:, uid].norm().pow(2))# + Z[:, u_nid].norm().pow(2))
 
             print('loss:', loss)
 
@@ -105,3 +110,4 @@ def sorec(train_set, l, n_epochs=100, learning_rate=0.001, lamda_C=10, lamda=0.0
 
     res = {'U': U, 'V': V, 'Z': Z}
     return res
+

@@ -11,7 +11,8 @@ from ...utils.common import sigmoid
 from ...utils.common import scale
 from ...utils.common import intersects
 from ...exception import ScoreException
-from .sorec import *
+# from .sorec import *
+from cornac.models.sorec import sorec
 
 
 class SOREC(Recommender):
@@ -92,6 +93,48 @@ class SOREC(Recommender):
             raise ValueError('initial parameters Z dimension error')
 
     # fit the recommender model to the traning data
+    # def fit(self, train_set):
+    #     """Fit the model to observations.
+    #
+    #     Parameters
+    #     ----------
+    #     train_set: object of type TrainSet, required
+    #         An object contraining the user-item preference in csr scipy sparse format,\
+    #         as well as some useful attributes such as mappings to the original user/item ids.\
+    #         Please refer to the class TrainSet in the "data" module for details.
+    #     """
+    #
+    #     Recommender.fit(self, train_set)
+    #
+    #     X = self.train_set.matrix
+    #
+    #     if self.trainable:
+    #         # converting data to the triplet format (needed for cython function pmf)
+    #         (rid, cid, val) = sp.find(X)
+    #         val = np.array(val, dtype='float32')
+    #
+    #         if [self.train_set.min_rating, self.train_set.max_rating] != [0, 1]:
+    #             if self.train_set.min_rating == self.train_set.max_rating:
+    #                 val = scale(val, 0., 1., 0., self.train_set.max_rating)
+    #             else:
+    #                 val = (val - 1) / (max(val) - 1)
+    #
+    #         self.train_set.uir_tuple = tuple([self.train_set.uir_tuple[0], self.train_set.uir_tuple[1], val])
+    #
+    #         if self.verbose:
+    #             print('Learning...')
+    #
+    #         res = sorec(train_set, l=self.l, n_epochs=self.max_iter, learning_rate=self.learning_rate,
+    #                     lamda_C=self.lamda_C, lamda=self.lamda, init_params=self.init_params)
+    #
+    #         self.U = np.asarray(res['U'])
+    #         self.V = np.asarray(res['V'])
+    #
+    #         if self.verbose:
+    #             print('Learning completed')
+    #     elif self.verbose:
+    #         print('%s is trained already (trainable = False)' % (self.name))
+
     def fit(self, train_set):
         """Fit the model to observations.
 
@@ -105,34 +148,57 @@ class SOREC(Recommender):
 
         Recommender.fit(self, train_set)
 
-        X = self.train_set.matrix
-
         if self.trainable:
-            # converting data to the triplet format (needed for cython function pmf)
-            (rid, cid, val) = sp.find(X)
-            val = np.array(val, dtype='float32')
+            # user-item interactions
+            (rat_uid, rat_iid, rat_val) = train_set.uir_tuple
+            # user-user social network
+            map_uid = train_set.uid_list
+            social_net = train_set.user_graph.get_train_triplet(map_uid, map_uid)
+
+            social_raw = scipy.sparse.csc_matrix((social_net[:, 2], (social_net[:, 0], social_net[:, 1])),
+                                                shape=(len(map_uid), len(map_uid)))
+            outdegree = np.array(social_raw.sum(axis=0)).flatten()
+            indegree = np.array(social_raw.sum(axis=1)).flatten()
+            weighted_social = []
+            for ui, uk, cik in social_net:
+                i_out = outdegree[int(ui)]
+                k_in = indegree[int(uk)]
+                cik_weighted = math.sqrt(k_in / (k_in + i_out)) * cik
+                weighted_social.append(cik_weighted)
+
+            (net_uid, net_jid, net_val) = (social_net[:, 0], social_net[:, 1], weighted_social)
 
             if [self.train_set.min_rating, self.train_set.max_rating] != [0, 1]:
                 if self.train_set.min_rating == self.train_set.max_rating:
-                    val = scale(val, 0., 1., 0., self.train_set.max_rating)
+                    rat_val = scale(rat_val, 0., 1., 0., self.train_set.max_rating)
                 else:
-                    val = (val - 1) / (max(val) - 1)
+                    rat_val = scale(rat_val, 0., 1., self.train_set.min_rating, self.train_set.max_rating)
 
-            self.train_set.uir_tuple = tuple([self.train_set.uir_tuple[0], self.train_set.uir_tuple[1], val])
+            rat_val = np.array(rat_val, dtype='float32')
+            rat_uid = np.array(rat_uid, dtype='int32')
+            rat_iid = np.array(rat_iid, dtype='int32')
+
+            net_val = np.array(net_val, dtype='float32')
+            net_uid = np.array(net_uid, dtype='int32')
+            net_jid = np.array(net_jid, dtype='int32')
 
             if self.verbose:
                 print('Learning...')
 
-            res = sorec(train_set, l=self.l, n_epochs=self.max_iter, learning_rate=self.learning_rate,
-                        lamda_C=self.lamda_C, lamda=self.lamda, init_params=self.init_params)
+            res = sorec.sorec(rat_uid, rat_iid, rat_val, net_uid, net_jid, net_val, k=self.k, n_users=train_set.num_users,
+                          n_items=train_set.num_items, n_ratings=len(rat_val), n_edges=len(net_val),
+                          n_epochs=self.max_iter,
+                          lamda=self.lamda, learning_rate=self.learning_rate, gamma=self.gamma,
+                          init_params=self.init_params, verbose=self.verbose)
 
             self.U = np.asarray(res['U'])
             self.V = np.asarray(res['V'])
+            self.Z = np.asarray(res['Z'])
 
             if self.verbose:
                 print('Learning completed')
         elif self.verbose:
-            print('%s is trained already (trainable = False)' % (self.name))
+            print('%s is trained already (trainable = False)' % self.name)
 
     def score(self, user_id, item_id=None):
         """Predict the scores/ratings of a user for an item.
