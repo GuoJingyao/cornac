@@ -1,28 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="834a5bfc-beb7-4eae-8f80-d1a86a801a1b" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/cornac/data/graph.py" afterPath="$PROJECT_DIR$/cornac/data/graph.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/datasets/__init__.py" afterPath="$PROJECT_DIR$/cornac/datasets/__init__.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/eval_methods/base_method.py" afterPath="$PROJECT_DIR$/cornac/eval_methods/base_method.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/experiment/experiment.py" afterPath="$PROJECT_DIR$/cornac/experiment/experiment.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/__init__.py" afterPath="$PROJECT_DIR$/cornac/models/__init__.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/bpr/recom_bpr.cpp" afterPath="$PROJECT_DIR$/cornac/models/bpr/recom_bpr.cpp" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/c2pf/cython/c2pf.cpp" afterPath="$PROJECT_DIR$/cornac/models/c2pf/cython/c2pf.cpp" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/mcf/cython/mcf.cpp" afterPath="$PROJECT_DIR$/cornac/models/mcf/cython/mcf.cpp" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/mf/recom_mf.cpp" afterPath="$PROJECT_DIR$/cornac/models/mf/recom_mf.cpp" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/pmf/cython/pmf.cpp" afterPath="$PROJECT_DIR$/cornac/models/pmf/cython/pmf.cpp" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/pmf_seperable/recom_pmf_seperable.py" afterPath="$PROJECT_DIR$/cornac/models/pmf_seperable/recom_pmf_seperable.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/sorec/cython/sorec.pyx" afterPath="$PROJECT_DIR$/cornac/models/sorec/cython/sorec.pyx" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/sorec/recom_sorec.py" afterPath="$PROJECT_DIR$/cornac/models/sorec/recom_sorec.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/sorec/sorec.py" afterPath="$PROJECT_DIR$/cornac/models/sorec/sorec.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/utils/__init__.py" afterPath="$PROJECT_DIR$/cornac/utils/__init__.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/utils/fast_dot.cpp" afterPath="$PROJECT_DIR$/cornac/utils/fast_dot.cpp" />
-      <change beforePath="$PROJECT_DIR$/examples/sorec_epinions.py" afterPath="$PROJECT_DIR$/examples/sorec_epinions.py" />
-      <change beforePath="$PROJECT_DIR$/setup.py" afterPath="$PROJECT_DIR$/setup.py" />
-      <change beforePath="$PROJECT_DIR$/transfer/transfertest.py" afterPath="$PROJECT_DIR$/transfer/transfertest.py" />
-    </list>
+    <list default="true" id="834a5bfc-beb7-4eae-8f80-d1a86a801a1b" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
