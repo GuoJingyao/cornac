@@ -2,122 +2,26 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="834a5bfc-beb7-4eae-8f80-d1a86a801a1b" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/bug_report.md" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/feature_request.md" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/general-ask.md" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/ISSUE_TEMPLATE.md" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/PULL_REQUEST_TEMPLATE.md" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cornac/datasets/amazon_office.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cornac/datasets/citeulike.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cornac/models/conv_mf/__init__.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cornac/models/conv_mf/convmf.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cornac/models/conv_mf/recom_convmf.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cornac/models/conv_mf/requirements.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cornac/models/mcf/__init__.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cornac/models/mcf/cython/mcf.cpp" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cornac/models/mcf/cython/mcf.pyx" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cornac/models/mcf/recom_mcf.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cornac/utils/fast_dot.cpp" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/cornac/utils/fast_dot.pyx" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/docs/source/data.rst" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/docs/source/datasets.rst" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/examples/c2pf_example.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/examples/cdl_example.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/examples/conv_mf_example.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/examples/first_example.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/examples/pcrl_example.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/tests/cornac/datasets/test_amazon_office.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/tests/cornac/datasets/test_citeulike.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/tests/graph_data.txt" />
-      <change beforePath="$PROJECT_DIR$/.appveyor.yml" afterPath="$PROJECT_DIR$/.appveyor.yml" />
-      <change beforePath="$PROJECT_DIR$/.circleci/config.yml" afterPath="$PROJECT_DIR$/.circleci/config.yml" />
-      <change beforePath="$PROJECT_DIR$/.codecov.yml" afterPath="$PROJECT_DIR$/.codecov.yml" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/.travis.yml" afterPath="$PROJECT_DIR$/.travis.yml" />
-      <change beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change beforePath="$PROJECT_DIR$/cornac/data/__init__.py" afterPath="$PROJECT_DIR$/cornac/data/__init__.py" />
       <change beforePath="$PROJECT_DIR$/cornac/data/graph.py" afterPath="$PROJECT_DIR$/cornac/data/graph.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/data/image.py" afterPath="$PROJECT_DIR$/cornac/data/image.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/data/module.py" afterPath="$PROJECT_DIR$/cornac/data/module.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/data/reader.py" afterPath="$PROJECT_DIR$/cornac/data/reader.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/data/testset.py" afterPath="$PROJECT_DIR$/cornac/data/testset.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/data/text.py" afterPath="$PROJECT_DIR$/cornac/data/text.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/data/trainset.py" afterPath="$PROJECT_DIR$/cornac/data/trainset.py" />
       <change beforePath="$PROJECT_DIR$/cornac/datasets/__init__.py" afterPath="$PROJECT_DIR$/cornac/datasets/__init__.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/datasets/movielens.py" afterPath="$PROJECT_DIR$/cornac/datasets/movielens.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/datasets/netflix.py" afterPath="$PROJECT_DIR$/cornac/datasets/netflix.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/datasets/tradesy.py" afterPath="$PROJECT_DIR$/cornac/datasets/tradesy.py" />
       <change beforePath="$PROJECT_DIR$/cornac/eval_methods/base_method.py" afterPath="$PROJECT_DIR$/cornac/eval_methods/base_method.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/eval_methods/cross_validation.py" afterPath="$PROJECT_DIR$/cornac/eval_methods/cross_validation.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/eval_methods/ratio_split.py" afterPath="$PROJECT_DIR$/cornac/eval_methods/ratio_split.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/experiment/cv_result.py" afterPath="" />
       <change beforePath="$PROJECT_DIR$/cornac/experiment/experiment.py" afterPath="$PROJECT_DIR$/cornac/experiment/experiment.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/experiment/result.py" afterPath="$PROJECT_DIR$/cornac/experiment/result.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/metrics/ranking.py" afterPath="$PROJECT_DIR$/cornac/metrics/ranking.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/README.md" afterPath="$PROJECT_DIR$/cornac/models/README.md" />
       <change beforePath="$PROJECT_DIR$/cornac/models/__init__.py" afterPath="$PROJECT_DIR$/cornac/models/__init__.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/bpr/__init__.py" afterPath="$PROJECT_DIR$/cornac/models/bpr/__init__.py" />
       <change beforePath="$PROJECT_DIR$/cornac/models/bpr/recom_bpr.cpp" afterPath="$PROJECT_DIR$/cornac/models/bpr/recom_bpr.cpp" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/bpr/recom_bpr.pyx" afterPath="$PROJECT_DIR$/cornac/models/bpr/recom_bpr.pyx" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/c2pf/cpp/cpp_c2pf.cpp" afterPath="$PROJECT_DIR$/cornac/models/c2pf/cpp/cpp_c2pf.cpp" />
       <change beforePath="$PROJECT_DIR$/cornac/models/c2pf/cython/c2pf.cpp" afterPath="$PROJECT_DIR$/cornac/models/c2pf/cython/c2pf.cpp" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/c2pf/cython/c2pf.pyx" afterPath="$PROJECT_DIR$/cornac/models/c2pf/cython/c2pf.pyx" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/c2pf/recom_c2pf.py" afterPath="$PROJECT_DIR$/cornac/models/c2pf/recom_c2pf.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/cdl/cdl.py" afterPath="$PROJECT_DIR$/cornac/models/cdl/cdl.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/cdl/recom_cdl.py" afterPath="$PROJECT_DIR$/cornac/models/cdl/recom_cdl.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/coe/coe.py" afterPath="$PROJECT_DIR$/cornac/models/coe/coe.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/coe/recom_coe.py" afterPath="$PROJECT_DIR$/cornac/models/coe/recom_coe.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/hpf/hpf.py" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/hpf/recom_hpf.py" afterPath="$PROJECT_DIR$/cornac/models/hpf/recom_hpf.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/ibpr/ibpr.py" afterPath="$PROJECT_DIR$/cornac/models/ibpr/ibpr.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/mf/__init__.py" afterPath="$PROJECT_DIR$/cornac/models/mf/__init__.py" />
+      <change beforePath="$PROJECT_DIR$/cornac/models/mcf/cython/mcf.cpp" afterPath="$PROJECT_DIR$/cornac/models/mcf/cython/mcf.cpp" />
       <change beforePath="$PROJECT_DIR$/cornac/models/mf/recom_mf.cpp" afterPath="$PROJECT_DIR$/cornac/models/mf/recom_mf.cpp" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/mf/recom_mf.pyx" afterPath="$PROJECT_DIR$/cornac/models/mf/recom_mf.pyx" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/online_ibpr/online_ibpr.py" afterPath="$PROJECT_DIR$/cornac/models/online_ibpr/online_ibpr.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/pcrl/pcrl.py" afterPath="$PROJECT_DIR$/cornac/models/pcrl/pcrl.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/pcrl/recom_pcrl.py" afterPath="$PROJECT_DIR$/cornac/models/pcrl/recom_pcrl.py" />
       <change beforePath="$PROJECT_DIR$/cornac/models/pmf/cython/pmf.cpp" afterPath="$PROJECT_DIR$/cornac/models/pmf/cython/pmf.cpp" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/pmf/cython/pmf.pyx" afterPath="$PROJECT_DIR$/cornac/models/pmf/cython/pmf.pyx" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/pmf/recom_pmf.py" afterPath="$PROJECT_DIR$/cornac/models/pmf/recom_pmf.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/models/vbpr/recom_vbpr.py" afterPath="$PROJECT_DIR$/cornac/models/vbpr/recom_vbpr.py" />
+      <change beforePath="$PROJECT_DIR$/cornac/models/pmf_seperable/recom_pmf_seperable.py" afterPath="$PROJECT_DIR$/cornac/models/pmf_seperable/recom_pmf_seperable.py" />
+      <change beforePath="$PROJECT_DIR$/cornac/models/sorec/cython/sorec.pyx" afterPath="$PROJECT_DIR$/cornac/models/sorec/cython/sorec.pyx" />
+      <change beforePath="$PROJECT_DIR$/cornac/models/sorec/recom_sorec.py" afterPath="$PROJECT_DIR$/cornac/models/sorec/recom_sorec.py" />
+      <change beforePath="$PROJECT_DIR$/cornac/models/sorec/sorec.py" afterPath="$PROJECT_DIR$/cornac/models/sorec/sorec.py" />
       <change beforePath="$PROJECT_DIR$/cornac/utils/__init__.py" afterPath="$PROJECT_DIR$/cornac/utils/__init__.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/utils/common.py" afterPath="$PROJECT_DIR$/cornac/utils/common.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/utils/download.py" afterPath="$PROJECT_DIR$/cornac/utils/download.py" />
-      <change beforePath="$PROJECT_DIR$/cornac/utils/dummy_import.py" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/docs/requirement.txt" afterPath="$PROJECT_DIR$/docs/requirement.txt" />
-      <change beforePath="$PROJECT_DIR$/docs/source/conf.py" afterPath="$PROJECT_DIR$/docs/source/conf.py" />
-      <change beforePath="$PROJECT_DIR$/docs/source/eval_methods.rst" afterPath="$PROJECT_DIR$/docs/source/eval_methods.rst" />
-      <change beforePath="$PROJECT_DIR$/docs/source/example.rst" afterPath="$PROJECT_DIR$/docs/source/example.rst" />
-      <change beforePath="$PROJECT_DIR$/docs/source/experiment.rst" afterPath="$PROJECT_DIR$/docs/source/experiment.rst" />
-      <change beforePath="$PROJECT_DIR$/docs/source/index.rst" afterPath="$PROJECT_DIR$/docs/source/index.rst" />
-      <change beforePath="$PROJECT_DIR$/docs/source/installation.rst" afterPath="$PROJECT_DIR$/docs/source/installation.rst" />
-      <change beforePath="$PROJECT_DIR$/docs/source/metrics.rst" afterPath="$PROJECT_DIR$/docs/source/metrics.rst" />
-      <change beforePath="$PROJECT_DIR$/docs/source/models.rst" afterPath="$PROJECT_DIR$/docs/source/models.rst" />
-      <change beforePath="$PROJECT_DIR$/examples/README.md" afterPath="$PROJECT_DIR$/examples/README.md" />
-      <change beforePath="$PROJECT_DIR$/examples/bpr_netflix.py" afterPath="$PROJECT_DIR$/examples/bpr_netflix.py" />
-      <change beforePath="$PROJECT_DIR$/examples/given_data.py" afterPath="$PROJECT_DIR$/examples/given_data.py" />
-      <change beforePath="$PROJECT_DIR$/examples/vbpr_tradesy.py" afterPath="$PROJECT_DIR$/examples/vbpr_tradesy.py" />
+      <change beforePath="$PROJECT_DIR$/cornac/utils/fast_dot.cpp" afterPath="$PROJECT_DIR$/cornac/utils/fast_dot.cpp" />
+      <change beforePath="$PROJECT_DIR$/examples/sorec_epinions.py" afterPath="$PROJECT_DIR$/examples/sorec_epinions.py" />
       <change beforePath="$PROJECT_DIR$/setup.py" afterPath="$PROJECT_DIR$/setup.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/data/test_graph.py" afterPath="$PROJECT_DIR$/tests/cornac/data/test_graph.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/data/test_image.py" afterPath="$PROJECT_DIR$/tests/cornac/data/test_image.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/data/test_module.py" afterPath="$PROJECT_DIR$/tests/cornac/data/test_module.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/data/test_reader.py" afterPath="$PROJECT_DIR$/tests/cornac/data/test_reader.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/data/test_testset.py" afterPath="$PROJECT_DIR$/tests/cornac/data/test_testset.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/data/test_text.py" afterPath="$PROJECT_DIR$/tests/cornac/data/test_text.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/data/test_trainset.py" afterPath="$PROJECT_DIR$/tests/cornac/data/test_trainset.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/datasets/test_movielens.py" afterPath="$PROJECT_DIR$/tests/cornac/datasets/test_movielens.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/datasets/test_netflix.py" afterPath="$PROJECT_DIR$/tests/cornac/datasets/test_netflix.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/datasets/test_tradesy.py" afterPath="$PROJECT_DIR$/tests/cornac/datasets/test_tradesy.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/eval_methods/test_base_method.py" afterPath="$PROJECT_DIR$/tests/cornac/eval_methods/test_base_method.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/eval_methods/test_cross_validation.py" afterPath="$PROJECT_DIR$/tests/cornac/eval_methods/test_cross_validation.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/eval_methods/test_ratio_split.py" afterPath="$PROJECT_DIR$/tests/cornac/eval_methods/test_ratio_split.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/experiment/test_experiment.py" afterPath="$PROJECT_DIR$/tests/cornac/experiment/test_experiment.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/metrics/test_ranking.py" afterPath="$PROJECT_DIR$/tests/cornac/metrics/test_ranking.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/metrics/test_rating.py" afterPath="$PROJECT_DIR$/tests/cornac/metrics/test_rating.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/utils/test_common.py" afterPath="$PROJECT_DIR$/tests/cornac/utils/test_common.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/utils/test_download.py" afterPath="$PROJECT_DIR$/tests/cornac/utils/test_download.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cornac/utils/test_dummy_import.py" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/transfer/transfertest.py" afterPath="$PROJECT_DIR$/transfer/transfertest.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -128,22 +32,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="recom_sorec.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="recom_sorec.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cornac/models/sorec/recom_sorec.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2788">
-              <caret line="171" column="35" lean-forward="false" selection-start-line="171" selection-start-column="35" selection-end-line="171" selection-end-column="35" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="common.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cornac/utils/common.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-495">
-              <caret line="15" column="4" lean-forward="false" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="4" />
-              <folding />
+            <state relative-caret-position="1037">
+              <caret line="128" column="95" lean-forward="false" selection-start-line="128" selection-start-column="95" selection-end-line="128" selection-end-column="95" />
+              <folding>
+                <element signature="e#55#73#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -151,21 +47,9 @@
       <file leaf-file-name="sorec_epinions.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/examples/sorec_epinions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="14" column="6" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="6" />
+            <state relative-caret-position="225">
+              <caret line="44" column="60" lean-forward="true" selection-start-line="44" selection-start-column="60" selection-end-line="44" selection-end-column="60" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="sorec.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/cornac/models/sorec/sorec.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="718">
-              <caret line="107" column="0" lean-forward="false" selection-start-line="107" selection-start-column="0" selection-end-line="107" selection-end-column="0" />
-              <folding>
-                <element signature="e#73#91#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -201,6 +85,7 @@
       <find>Results</find>
       <find>map</find>
       <find>t_matrix</find>
+      <find>mcf</find>
     </findStrings>
     <dirStrings>
       <dir>C:\Users\jyguo\Desktop\New\cornac</dir>
@@ -234,34 +119,38 @@
         <option value="$PROJECT_DIR$/examples/autorec.py" />
         <option value="$PROJECT_DIR$/cornac/datasets/movielens.py" />
         <option value="$PROJECT_DIR$/cornac/datasets/tradesy.py" />
-        <option value="$PROJECT_DIR$/cornac/datasets/__init__.py" />
         <option value="$PROJECT_DIR$/cornac/data/reader.py" />
         <option value="$PROJECT_DIR$/cornac/datasets/epinions.py" />
         <option value="$PROJECT_DIR$/cornac/models/sorec/__init__.py" />
-        <option value="$PROJECT_DIR$/examples/sorec_epinions.py" />
-        <option value="$PROJECT_DIR$/cornac/data/graph.py" />
         <option value="$PROJECT_DIR$/cornac/models/autorec/recom_autorec.py" />
         <option value="$PROJECT_DIR$/cornac/models/pmf(seperable)/__init__.py" />
         <option value="$PROJECT_DIR$/cornac/models/pmf(seperable)/recom_pmf(seperable).py" />
         <option value="$PROJECT_DIR$/cornac/models/pmf(seperable)/pmf(seperable).py" />
         <option value="$PROJECT_DIR$/cornac/models/pmf_seperable/__init__.py" />
-        <option value="$PROJECT_DIR$/cornac/models/__init__.py" />
         <option value="$PROJECT_DIR$/cornac/models/recommender.py" />
-        <option value="$PROJECT_DIR$/cornac/eval_methods/base_method.py" />
-        <option value="$PROJECT_DIR$/cornac/experiment/experiment.py" />
-        <option value="$PROJECT_DIR$/transfer/transfertest.py" />
         <option value="$PROJECT_DIR$/cornac/models/pmf_seperable/pmf_seperable.py" />
-        <option value="$PROJECT_DIR$/cornac/models/pmf_seperable/recom_pmf_seperable.py" />
         <option value="$PROJECT_DIR$/examples/pmf_ratio.py" />
         <option value="$PROJECT_DIR$/cornac/models/autorec/autorec.py" />
         <option value="$PROJECT_DIR$/cornac/eval_methods/ratio_split.py" />
         <option value="$PROJECT_DIR$/cornac/utils/common.py" />
-        <option value="$PROJECT_DIR$/cornac/models/sorec/recom_sorec.py" />
+        <option value="$PROJECT_DIR$/cornac/data/graph.py" />
+        <option value="$PROJECT_DIR$/cornac/utils/__init__.py" />
+        <option value="$PROJECT_DIR$/cornac/datasets/__init__.py" />
+        <option value="$PROJECT_DIR$/cornac/eval_methods/base_method.py" />
+        <option value="$PROJECT_DIR$/cornac/experiment/experiment.py" />
+        <option value="$PROJECT_DIR$/cornac/models/__init__.py" />
+        <option value="$PROJECT_DIR$/cornac/models/mcf/cython/mcf.pyx" />
+        <option value="$PROJECT_DIR$/cornac/models/pmf_seperable/recom_pmf_seperable.py" />
+        <option value="$PROJECT_DIR$/transfer/transfertest.py" />
+        <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/cornac/models/sorec/sorec.py" />
+        <option value="$PROJECT_DIR$/examples/sorec_epinions.py" />
+        <option value="$PROJECT_DIR$/cornac/models/sorec/cython/sorec.pyx" />
+        <option value="$PROJECT_DIR$/cornac/models/sorec/recom_sorec.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-8" />
     <option name="y" value="-8" />
     <option name="width" value="1056" />
@@ -312,18 +201,6 @@
               <item name="cornac" type="b2602c69:ProjectViewProjectNode" />
               <item name="cornac" type="462c0819:PsiDirectoryNode" />
               <item name="cornac" type="462c0819:PsiDirectoryNode" />
-              <item name="datasets" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cornac" type="b2602c69:ProjectViewProjectNode" />
-              <item name="cornac" type="462c0819:PsiDirectoryNode" />
-              <item name="cornac" type="462c0819:PsiDirectoryNode" />
-              <item name="experiment" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cornac" type="b2602c69:ProjectViewProjectNode" />
-              <item name="cornac" type="462c0819:PsiDirectoryNode" />
-              <item name="cornac" type="462c0819:PsiDirectoryNode" />
               <item name="models" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -331,7 +208,12 @@
               <item name="cornac" type="462c0819:PsiDirectoryNode" />
               <item name="cornac" type="462c0819:PsiDirectoryNode" />
               <item name="models" type="462c0819:PsiDirectoryNode" />
-              <item name="vbpr" type="462c0819:PsiDirectoryNode" />
+              <item name="sorec" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="cornac" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cornac" type="462c0819:PsiDirectoryNode" />
+              <item name="examples" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="cornac" type="b2602c69:ProjectViewProjectNode" />
@@ -371,7 +253,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.sorectest">
+  <component name="RunManager" selected="Python.sorectest_t">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -426,7 +308,7 @@
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
     </configuration>
-    <configuration name="sorectest" type="PythonConfigurationType" factoryName="Python">
+    <configuration name="sorectest_t" type="PythonConfigurationType" factoryName="Python">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -465,7 +347,7 @@
     <list size="4">
       <item index="0" class="java.lang.String" itemvalue="Python.autorec" />
       <item index="1" class="java.lang.String" itemvalue="Python.transfer_test" />
-      <item index="2" class="java.lang.String" itemvalue="Python.sorectest" />
+      <item index="2" class="java.lang.String" itemvalue="Python.sorectest_t" />
       <item index="3" class="java.lang.String" itemvalue="Python.pmf_ration" />
     </list>
   </component>
@@ -503,17 +385,17 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20179136" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32998884" sideWeight="0.49789253" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.47826087" sideWeight="0.4056902" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.30880713" sideWeight="0.4056902" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32998884" sideWeight="0.49578503" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.40802675" sideWeight="0.5943098" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29765886" sideWeight="0.5943098" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32998884" sideWeight="0.49578503" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24080268" sideWeight="0.49367756" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34225196" sideWeight="0.80927294" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.38127092" sideWeight="0.80927294" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.40468228" sideWeight="0.66491044" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
@@ -603,68 +485,11 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="168" />
+      <option name="time" value="173" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/cornac/data/text.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="8" lean-forward="false" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/ProgramData/Anaconda3/Lib/collections/__init__.py" />
-    <entry file="file://$PROJECT_DIR$/cornac/models/pcrl/pcrl.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4029">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/models/bpr/recom_bpr.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/models/bpr/recom_bpr.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-867">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/models/autorec/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/models/online_ibpr/online_ibpr.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/data/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="14" column="23" lean-forward="false" selection-start-line="14" selection-start-column="12" selection-end-line="14" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/data/reader.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="344">
-          <caret line="43" column="21" lean-forward="true" selection-start-line="43" selection-start-column="21" selection-end-line="43" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cornac/utils/data_utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
@@ -700,36 +525,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/models/pmf_seperable/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="81">
-          <caret line="3" column="0" lean-forward="true" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/tqdm/_tqdm.py" />
     <entry file="file://$PROJECT_DIR$/cornac/data/testset.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
           <caret line="30" column="17" lean-forward="false" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/models/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="1" lean-forward="false" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/models/recommender.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1196">
-          <caret line="44" column="12" lean-forward="true" selection-start-line="44" selection-start-column="12" selection-end-line="44" selection-end-column="12" />
-          <folding>
-            <element signature="e#147#185#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -773,26 +573,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/experiment/result.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="186">
-          <caret line="24" column="8" lean-forward="false" selection-start-line="24" selection-start-column="8" selection-end-line="24" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cornac/models/sorec/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/data/graph.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="58" column="0" lean-forward="false" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -837,30 +621,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/eval_methods/base_method.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2336">
-          <caret line="180" column="45" lean-forward="false" selection-start-line="180" selection-start-column="42" selection-end-line="180" selection-end-column="45" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/models/pmf/recom_pmf.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="277">
-          <caret line="107" column="0" lean-forward="true" selection-start-line="107" selection-start-column="0" selection-end-line="107" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/data/trainset.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="385">
-          <caret line="274" column="42" lean-forward="false" selection-start-line="274" selection-start-column="33" selection-end-line="274" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cornac/models/vbpr/recom_vbpr.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1340">
@@ -887,32 +647,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/models/pmf_seperable/recom_pmf_seperable.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="564">
-          <caret line="108" column="0" lean-forward="true" selection-start-line="108" selection-start-column="0" selection-end-line="108" selection-end-column="0" />
-          <folding>
-            <element signature="e#57#75#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/pmf_ratio.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="22" column="6" lean-forward="false" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/experiment/experiment.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="103" column="0" lean-forward="false" selection-start-line="103" selection-start-column="0" selection-end-line="103" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cornac/eval_methods/ratio_split.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
@@ -929,36 +663,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/models/pmf_seperable/pmf_seperable.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="119" lean-forward="true" selection-start-line="9" selection-start-column="110" selection-end-line="9" selection-end-column="119" />
-          <folding>
-            <element signature="e#55#73#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/transfer/transfertest.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="56">
-          <caret line="19" column="52" lean-forward="true" selection-start-line="19" selection-start-column="9" selection-end-line="19" selection-end-column="52" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/datasets/epinions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="32" column="76" lean-forward="false" selection-start-line="32" selection-start-column="23" selection-end-line="32" selection-end-column="76" />
-          <folding>
-            <element signature="e#239#264#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cornac/models/pmf/cython/pmf.pyx">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="274">
@@ -967,36 +671,236 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/sorec_epinions.py">
+    <entry file="file://$PROJECT_DIR$/cornac/models/mcf/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="14" column="6" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="6" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/utils/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#35#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/datasets/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="0" lean-forward="true" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/eval_methods/base_method.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-51">
+          <caret line="12" column="41" lean-forward="false" selection-start-line="12" selection-start-column="41" selection-end-line="12" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/experiment/experiment.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="46" column="30" lean-forward="false" selection-start-line="46" selection-start-column="30" selection-end-line="46" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/models/pmf/recom_pmf.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/models/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="21" lean-forward="true" selection-start-line="16" selection-start-column="21" selection-end-line="16" selection-end-column="21" />
+          <folding>
+            <element signature="e#267#287#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/data/graph.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="47" column="8" lean-forward="false" selection-start-line="47" selection-start-column="8" selection-end-line="47" selection-end-column="8" />
+          <folding>
+            <element signature="e#77#104#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/conv_mf_example.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/models/mcf/cython/mcf.pyx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-263">
+          <caret line="42" column="44" lean-forward="true" selection-start-line="42" selection-start-column="44" selection-end-line="42" selection-end-column="44" />
+          <folding>
+            <element signature="e#1990#3278#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/models/pmf_seperable/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="0" lean-forward="true" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/data/trainset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="426">
+          <caret line="392" column="23" lean-forward="true" selection-start-line="392" selection-start-column="13" selection-end-line="392" selection-end-column="23" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cornac/utils/common.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-495">
+        <state relative-caret-position="195">
           <caret line="15" column="4" lean-forward="false" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="4" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cornac/models/sorec/recom_sorec.py">
+    <entry file="file://$PROJECT_DIR$/cornac/models/pmf_seperable/pmf_seperable.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2788">
-          <caret line="171" column="35" lean-forward="false" selection-start-line="171" selection-start-column="35" selection-end-line="171" selection-end-column="35" />
+        <state relative-caret-position="339">
+          <caret line="62" column="0" lean-forward="false" selection-start-line="62" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/experiment/result.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="52">
+          <caret line="77" column="22" lean-forward="false" selection-start-line="77" selection-start-column="6" selection-end-line="77" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/setup.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="395">
+          <caret line="96" column="30" lean-forward="false" selection-start-line="96" selection-start-column="30" selection-end-line="96" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#54#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/datasets/epinions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-269">
+          <caret line="11" column="3" lean-forward="false" selection-start-line="11" selection-start-column="3" selection-end-line="11" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/pmf_ratio.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="527">
+          <caret line="37" column="48" lean-forward="false" selection-start-line="37" selection-start-column="48" selection-end-line="37" selection-end-column="48" />
+          <folding>
+            <element signature="e#183#196#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/first_example.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="30" column="42" lean-forward="false" selection-start-line="30" selection-start-column="42" selection-end-line="30" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/models/mcf/recom_mcf.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="867">
+          <caret line="70" column="38" lean-forward="false" selection-start-line="70" selection-start-column="38" selection-end-line="70" selection-end-column="38" />
+          <folding>
+            <element signature="e#77#95#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/models/recommender.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="31" column="8" lean-forward="false" selection-start-line="31" selection-start-column="8" selection-end-line="31" selection-end-column="8" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cornac/models/sorec/sorec.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="718">
-          <caret line="107" column="0" lean-forward="false" selection-start-line="107" selection-start-column="0" selection-end-line="107" selection-end-column="0" />
+        <state relative-caret-position="1275">
+          <caret line="114" column="71" lean-forward="true" selection-start-line="89" selection-start-column="4" selection-end-line="114" selection-end-column="71" />
           <folding>
-            <element signature="e#73#91#0" expanded="true" />
+            <element signature="e#73#91#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/transfer/transfertest.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="715">
+          <caret line="119" column="72" lean-forward="true" selection-start-line="119" selection-start-column="33" selection-end-line="119" selection-end-column="72" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/models/pmf_seperable/recom_pmf_seperable.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="546">
+          <caret line="156" column="31" lean-forward="false" selection-start-line="156" selection-start-column="31" selection-end-line="156" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/models/sorec/cython/sorec.pyx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="87" column="24" lean-forward="true" selection-start-line="87" selection-start-column="24" selection-end-line="87" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/sorec_epinions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="44" column="60" lean-forward="true" selection-start-line="44" selection-start-column="60" selection-end-line="44" selection-end-column="60" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cornac/models/sorec/recom_sorec.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1037">
+          <caret line="128" column="95" lean-forward="false" selection-start-line="128" selection-start-column="95" selection-end-line="128" selection-end-column="95" />
+          <folding>
+            <element signature="e#55#73#0" expanded="true" />
           </folding>
         </state>
       </provider>

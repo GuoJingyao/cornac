@@ -45,17 +45,8 @@ class Experiment:
         self.metrics = self._validate_metrics(metrics)
         self.user_based = user_based
         self.verbose = verbose
-<<<<<<< HEAD
-        self.results = Result()
-        from ..eval_methods.ratio_split import RatioSplit
-        from ..eval_methods.cross_validation import CrossValidation
-        if isinstance(eval_method, RatioSplit):
-            self.results = Result()
-        elif isinstance(eval_method, CrossValidation):
-            self.results = CVResult(eval_method.n_folds)
-=======
         self.result = None
->>>>>>> upstream/master
+
 
     @staticmethod
     def _validate_models(input_models):

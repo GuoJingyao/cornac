@@ -12,6 +12,51 @@ import torch.nn as nn
 from cornac.utils import data_utils
 import pdb
 
+
+# fit the recommender model to the traning data
+# def fit(self, train_set):
+#     """Fit the model to observations.
+#
+#     Parameters
+#     ----------
+#     train_set: object of type TrainSet, required
+#         An object contraining the user-item preference in csr scipy sparse format,\
+#         as well as some useful attributes such as mappings to the original user/item ids.\
+#         Please refer to the class TrainSet in the "data" module for details.
+#     """
+#
+#     Recommender.fit(self, train_set)
+#
+#     X = self.train_set.matrix
+#
+#     if self.trainable:
+#         # converting data to the triplet format (needed for cython function pmf)
+#         (rid, cid, val) = sp.find(X)
+#         val = np.array(val, dtype='float32')
+#
+#         if [self.train_set.min_rating, self.train_set.max_rating] != [0, 1]:
+#             if self.train_set.min_rating == self.train_set.max_rating:
+#                 val = scale(val, 0., 1., 0., self.train_set.max_rating)
+#             else:
+#                 val = (val - 1) / (max(val) - 1)
+#
+#         self.train_set.uir_tuple = tuple([self.train_set.uir_tuple[0], self.train_set.uir_tuple[1], val])
+#
+#         if self.verbose:
+#             print('Learning...')
+#
+#         res = sorec(train_set, l=self.l, n_epochs=self.max_iter, learning_rate=self.learning_rate,
+#                     lamda_C=self.lamda_C, lamda=self.lamda, init_params=self.init_params)
+#
+#         self.U = np.asarray(res['U'])
+#         self.V = np.asarray(res['V'])
+#
+#         if self.verbose:
+#             print('Learning completed')
+#     elif self.verbose:
+#         print('%s is trained already (trainable = False)' % (self.name))
+
+
 def sorec(train_set, l, n_epochs=100, learning_rate=0.001, lamda_C=10, lamda=0.01, init_params=None):
 
     X = train_set.matrix

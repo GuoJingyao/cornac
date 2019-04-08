@@ -104,7 +104,7 @@ class PMF_seperable(Recommender):
         # cid = np.array(cid, dtype='int32')
         # tX = np.concatenate((np.concatenate(([rid], [cid]), axis=0).T, val.reshape((len(val), 1))), axis=1)
 
-        self.train_set.uir_tuple = tuple([self.train_set.uir_tuple[0],self.train_set.uir_tuple[1],val])
+        self.train_set.uir_tuple = tuple([self.train_set.uir_tuple[0],self.train_set.uir_tuple[1], val])
         del rid, cid, val
 
         print('Learning...')

@@ -40,11 +40,12 @@ rmse = cornac.metrics.RMSE()
 rec_20 = cornac.metrics.Recall(k=20)
 pre_20 = cornac.metrics.Precision(k=20)
 
-res_Baseline = numpy.empty((0, 4))
-res_fixV = numpy.empty((0, 4))
-res_transferV = numpy.empty((0, 4))
+res_MAE = numpy.empty((3, 0))
+res_RMSE = numpy.empty((3, 0))
+res_RECALL20 = numpy.empty((3, 0))
+res_PRECISION20 = numpy.empty((3, 0))
 
-maxiter = 200
+maxiter = 100
 
 # Instantiate a baseline PMF recommender model and then run an experiment.
 pmf_baseline = PMF_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lamda=0.001,
@@ -68,7 +69,7 @@ pmf_transferV = PMF_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lamda
                                   init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU)})
 
 
-for Tsize in range(1, 20, 1):
+for Tration in range(5, 100, 5):
 
     # sparse target training data
     Tusers = list(numpy.unique(TargetData[:, 0]))
@@ -77,7 +78,7 @@ for Tsize in range(1, 20, 1):
     for u in Tusers:
         index_Udata = numpy.isin(TargetData[:, 0], u)
         Udata = TargetData[index_Udata, :]
-        Utest, Utrain = train_test_split(Udata, test_size=Tsize)
+        Utest, Utrain = train_test_split(Udata, test_size=(Tration/100))
         # sampled_Udata = Udata[numpy.random.choice(Udata.shape[0], round(Udata.shape[0]*0.25), replace=False), :]
         sparse_target_train = numpy.vstack((sparse_target_train, Utrain))
         target_test = numpy.vstack((target_test, Utest))
@@ -102,10 +103,23 @@ for Tsize in range(1, 20, 1):
                                       metrics=[mae, rmse, rec_20, pre_20], user_based=True)
     exp_transferV.run()
 
-    res_Baseline = numpy.vstack((res_Baseline, exp_Baseline.results.avg.values))
-    res_fixV = numpy.vstack((res_fixV, exp_fixV.results.avg.values))
-    res_transferV = numpy.vstack((res_transferV, exp_transferV.results.avg.values))
+    res_MAE = numpy.hstack((res_MAE, np.array(
+        [[exp_Baseline.result[0].metric_avg_results.get("MAE")], [exp_fixV.result[0].metric_avg_results.get("MAE")],
+         [exp_transferV.result[0].metric_avg_results.get("MAE")]])))
 
-print("res_Baseline", res_Baseline)
-print("res_fixV", res_fixV)
-print("res_transferV", res_transferV)
+    res_RMSE = numpy.hstack((res_RMSE, np.array(
+        [[exp_Baseline.result[0].metric_avg_results.get("RMSE")], [exp_fixV.result[0].metric_avg_results.get("RMSE")],
+         [exp_transferV.result[0].metric_avg_results.get("RMSE")]])))
+
+    res_RECALL20 = numpy.hstack((res_RECALL20, np.array(
+        [[exp_Baseline.result[0].metric_avg_results.get("Recall@20")], [exp_fixV.result[0].metric_avg_results.get("Recall@20")],
+         [exp_transferV.result[0].metric_avg_results.get("Recall@20")]])))
+
+    res_PRECISION20 = numpy.hstack((res_PRECISION20, np.array(
+        [[exp_Baseline.result[0].metric_avg_results.get("Precision@20")], [exp_fixV.result[0].metric_avg_results.get("Precision@20")],
+         [exp_transferV.result[0].metric_avg_results.get("Precision@20")]])))
+
+print("res_MAE", res_MAE)
+print("res_RMSE", res_RMSE)
+print("res_RECALL20", res_RECALL20)
+print("res_PRECISION20", res_PRECISION20)

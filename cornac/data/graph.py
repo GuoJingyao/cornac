@@ -4,21 +4,12 @@
 @author: Aghiles Salah <asalah@smu.edu.sg>
 """
 
-<<<<<<< HEAD
-from . import Module
-import scipy.sparse as sp
-import numpy as np
-
-
-class GraphModule(Module):
-=======
 from . import FeatureModule
 import scipy.sparse as sp
 import numpy as np
 
 
 class GraphModule(FeatureModule):
->>>>>>> upstream/master
     """Graph module
     """
 
@@ -33,19 +24,16 @@ class GraphModule(FeatureModule):
         """
 
         for i, j, val in self.raw_data:
-<<<<<<< HEAD
+
             if not i in global_id_map:
                 global_id_map.setdefault(i, len(global_id_map))
             if not j in global_id_map:
                 global_id_map.setdefault(j, len(global_id_map))
 
             self.map_data.append([global_id_map[i], global_id_map[j], val])
+
         self.map_data = np.asanyarray(self.map_data)
-=======
-            self.map_data.append([global_id_map[i], global_id_map[j], val])
-        self.map_data = np.asanyarray(self.map_data)
-        #self.raw_data = None
->>>>>>> upstream/master
+        self.raw_data = None
 
     def _build_sparse_matrix(self, triplet):
         """Build sparse adjacency matrix
@@ -53,11 +41,8 @@ class GraphModule(FeatureModule):
 
         n_rows = max(triplet[:, 0]) + 1
         n_cols = max(triplet[:, 1]) + 1
-<<<<<<< HEAD
-=======
 
         # TODO: csr_matrix is more efficient for row slicing in batch function
->>>>>>> upstream/master
         self.matrix = sp.csc_matrix((triplet[:, 2], (triplet[:, 0], triplet[:, 1])), shape=(n_rows, n_cols))
 
     def get_train_triplet(self, train_row_ids, train_col_ids):
@@ -74,14 +59,6 @@ class GraphModule(FeatureModule):
 
         return np.asarray(train_triplet)
 
-<<<<<<< HEAD
-    def build(self, global_id_map):
-        self._build_triplet(global_id_map)
-        self._build_sparse_matrix(self.map_data)
-
-    def batch(self, batch_ids):
-        """Return batch of vectors from the sparse adjacency matrix corresponding to provided batch_ids.
-=======
     # TODO: id_map can be None to support GraphModule as an independent component
     def build(self, id_map=None):
         self._build_triplet(id_map)
@@ -90,8 +67,6 @@ class GraphModule(FeatureModule):
     # TODO: add feature_fallback decorator and rename the API more meaningful
     def batch(self, batch_ids):
         """Return batch of vectors from the sparse adjacency matrix corresponding to provided batch_ids.
-
->>>>>>> upstream/master
         Parameters
         ----------
         batch_ids: array, required
@@ -99,3 +74,5 @@ class GraphModule(FeatureModule):
         """
 
         return self.matrix[batch_ids]
+
+

@@ -11,7 +11,6 @@ from ..data import MultimodalTrainSet
 from ..data import MultimodalTestSet
 from ..utils.common import validate_format
 from ..metrics.rating import RatingMetric
-from ..experiment.result import SingleModelResult
 from ..metrics.ranking import RankingMetric
 from ..experiment.result import Result
 from collections import OrderedDict, defaultdict
@@ -199,20 +198,16 @@ class BaseMethod:
         for user_module in [self.user_text, self.user_image, self.user_graph]:
             if user_module is None:
                 continue
-<<<<<<< HEAD
-            user_module.build(global_id_map=self.global_uid_map)
-=======
+
             user_module.build(id_map=self.global_uid_map)
->>>>>>> upstream/master
+
 
         for item_module in [self.item_text, self.item_image, self.item_graph]:
             if item_module is None:
                 continue
-<<<<<<< HEAD
-            item_module.build(global_id_map=self.global_iid_map)
-=======
+
             item_module.build(id_map=self.global_iid_map)
->>>>>>> upstream/master
+
 
         for data_set in [self.train_set, self.test_set, self.val_set]:
             if data_set is None:
@@ -340,16 +335,14 @@ class BaseMethod:
             user_results = list(metric_user_results[mt.name].values())
             metric_avg_results[mt.name] = np.mean(user_results)
 
-<<<<<<< HEAD
-        return SingleModelResult(metric_avg_results, metric_user_results)
-=======
+
         test_time = time.time() - start
 
         metric_avg_results['Train (s)'] = train_time
         metric_avg_results['Test (s)'] = test_time
 
         return Result(model.name, metric_avg_results, metric_user_results)
->>>>>>> upstream/master
+
 
     @classmethod
     def from_splits(cls, train_data, test_data, val_data=None, data_format='UIR',

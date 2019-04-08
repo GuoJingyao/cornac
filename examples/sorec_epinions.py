@@ -1,7 +1,8 @@
 import cornac
 from cornac.datasets import epinions
 from cornac.eval_methods import RatioSplit
-from cornac.data.graph import *
+from cornac.data import GraphModule
+from cornac.models import PMF
 
 # Load the MovieLens 100K dataset
 # data = epinions.load_data()
@@ -22,14 +23,15 @@ with open("trust_data.txt", 'r') as f:
 trust = uir_triplets
 
 # data = TrainSet.uir_tuple(rating)
-user_graph_module = GraphModule(data = trust, normalized=True)
+user_graph_module = GraphModule(data = trust)
 
 ratio_split = RatioSplit(data=rating,
                          test_size=0.2, rating_threshold=0.5,
                          exclude_unknowns=True, verbose=True,
                          user_graph=user_graph_module)
 
-sorec = cornac.models.SOREC(l=5, max_iter=100, learning_rate=0.001, lamda_C=10, lamda=0.001, init_params={'U': None, 'V': None, 'Z': None})
+sorec = cornac.models.SOREC(k=5, max_iter=200, learning_rate=0.001, lamda_C=10., lamda=0.001, init_params={'U': None, 'V': None, 'Z': None}, verbose = True)
+pmf = PMF(k=10, max_iter=200, learning_rate=0.001, lamda=0.001)
 
 # Instantiate evaluation metrics.
 mae = cornac.metrics.MAE()
@@ -39,7 +41,7 @@ pre_20 = cornac.metrics.Precision(k=20)
 
 # Instantiate and then run an experiment.
 exp = cornac.Experiment(eval_method=ratio_split,
-                        models=[sorec],
+                        models=[sorec, pmf],
                         metrics=[mae, rmse, rec_20, pre_20],
                         user_based=True)
 exp.run()
