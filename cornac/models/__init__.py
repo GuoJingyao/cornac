@@ -15,3 +15,4 @@ from .mf import *
 from .conv_mf import *
 from .cdr import *
 from .sorec import *
+from .autorec import *
