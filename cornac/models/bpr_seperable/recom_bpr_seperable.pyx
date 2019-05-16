@@ -21,7 +21,7 @@ from ...utils import fast_dot
 from ...utils.common import scale
 
 
-cdef extern from "recom_bpr.h" namespace "recom_bpr" nogil:
+cdef extern from "recom_bpr_seperable.h" namespace "recom_bpr_seperable" nogil:
     cdef int get_thread_num()
 
 
@@ -44,7 +44,7 @@ cdef class RNGVector(object):
 
 
 
-class BPR(Recommender):
+class BPR_seperable(Recommender):
     """Bayesian Personalized Ranking.
 
     Parameters
@@ -83,15 +83,18 @@ class BPR(Recommender):
     BPR: Bayesian personalized ranking from implicit feedback. In UAI, pp. 452-461. 2009.
     """
 
-    def __init__(self, name='BPR', k=10, max_iter=100, learning_rate=0.001, lambda_reg=0.01,
-                 num_threads=0, trainable=True, verbose=False, init_params=None, seed=None):
+    def __init__(self, name='BPR', k=10, max_iter=100, learning_rate=0.001, lambda_reg=0.01, fixedParameter=None,
+                 num_threads=0, trainable=True, verbose=False, init_params={}, seed=None):
         super().__init__(name=name, trainable=trainable, verbose=verbose)
         self.k = k
         self.max_iter = max_iter
         self.learning_rate = learning_rate
         self.lambda_reg = lambda_reg
-        self.init_params = {} if init_params is None else init_params
+        self.init_params = init_params
         self.seed = seed
+        self.fixedParameter = fixedParameter
+        self.u_factors = np.copy(init_params.get('U'))
+        self.i_factors = np.copy(init_params.get('V'))
 
         import multiprocessing
         if num_threads > 0 and num_threads < multiprocessing.cpu_count():
@@ -118,9 +121,26 @@ class BPR(Recommender):
         n_users, n_items = train_set.num_users, train_set.num_items
 
         rng = get_rng(self.seed)
-        self.u_factors = self.init_params.get('U', (uniform((n_users, self.k), random_state=rng) - 0.5) / self.k)
-        self.i_factors = self.init_params.get('V', (uniform((n_items, self.k), random_state=rng) - 0.5) / self.k)
-        self.i_biases = self.init_params.get('Bi', zeros(n_items))
+
+        if self.init_params.get('V') is not None:
+            V = np.zeros([train_set.num_items, self.k])
+            initialV = np.copy(self.init_params.get('V'))
+            for oldindex, newindex in train_set.iid_map.items():
+                V[newindex, :] = initialV[int(oldindex), :]
+                self.i_factors = np.copy(V)
+                self.i_factors = np.asarray(self.i_factors,dtype=np.float32)
+        else:
+            self.i_factors = self.init_params.get('V', (uniform((n_items, self.k), random_state=rng) - 0.5) / self.k)
+
+        if self.init_params.get('U') is not None:
+            U = np.zeros([train_set.num_users, self.k])
+            initialU = np.copy(self.init_params.get('U'))
+            for oldindex, newindex in train_set.uid_map.items():
+                U[newindex, :] = initialU[int(oldindex), :]
+                self.u_factors = np.copy(U)
+                self.u_factors = np.asarray(self.u_factors, dtype=np.float32)
+        else:
+            self.u_factors = self.init_params.get('U', (uniform((n_users, self.k), random_state=rng) - 0.5) / self.k)
 
         if not self.trainable:
             return
@@ -140,18 +160,22 @@ class BPR(Recommender):
             for epoch in progress:
                 correct, skipped = self._fit_sgd(rng_pos, rng_neg, num_threads,
                                                  user_ids, X.indices, X.indptr,
-                                                 self.u_factors, self.i_factors, self.i_biases)
+                                                 self.u_factors, self.i_factors, fixed = self.fixedParameter)
                 progress.set_postfix({"correct": "%.2f%%" % (100.0 * correct / (len(user_ids) - skipped)),
                                       "skipped": "%.2f%%" % (100.0 * skipped / n_items)})
         if self.verbose:
             print('Optimization finished!')
+        # if self.fixedParameter == 'V':
+        #     self.i_factors = self.init_params['V']
+        #     print("fix item factors!")
+
 
     @cython.cdivision(True)
     @cython.boundscheck(False)
     @cython.wraparound(False)
     def _fit_sgd(self, RNGVector rng_pos, RNGVector rng_neg, int num_threads,
                  integral[:] user_ids, integral[:] item_ids, integral[:] indptr,
-                 floating[:, :] U, floating[:, :] V, floating[:] B):
+                 floating[:, :] U, floating[:, :] V, fixed=None):
         """Fit the model parameters (U, V, B) with SGD
         """
         cdef:
@@ -185,24 +209,30 @@ class BPR(Recommender):
                 user, item_i, item_j = &U[user_ids[i_index], 0], &V[i_id, 0], &V[j_id, 0]
 
                 # compute the score
-                score = B[i_id] - B[j_id]
+                # score = B[i_id] - B[j_id]
                 for f in range(factors):
-                    score = score + user[f] * (item_i[f] - item_j[f])
+                    score = user[f] * (item_i[f] - item_j[f])
+                    # score = score + user[f] * (item_i[f] - item_j[f])
                 z = 1.0 / (1.0 + exp(score))
 
                 if z < .5:
                     correct += 1
 
-                # update the factors via sgd.
-                for f in range(factors):
-                    temp = user[f]
-                    user[f] += lr * (z * (item_i[f] - item_j[f]) - reg * user[f])
-                    item_i[f] += lr * (z * temp - reg * item_i[f])
-                    item_j[f] += lr * (-z * temp - reg * item_j[f])
+                if fixed == 'V':
+                    for f in range(factors):
+                        temp = user[f]
+                        user[f] += lr * (z * (item_i[f] - item_j[f]) - reg * user[f])
+                else:
+                    # update the factors via sgd.
+                    for f in range(factors):
+                        temp = user[f]
+                        user[f] += lr * (z * (item_i[f] - item_j[f]) - reg * user[f])
+                        item_i[f] += lr * (z * temp - reg * item_i[f])
+                        item_j[f] += lr * (-z * temp - reg * item_j[f])
 
-                # update item biases
-                B[i_id] += lr * (z - reg * B[i_id])
-                B[j_id] += lr * (-z - reg * B[j_id])
+                # # update item biases
+                # B[i_id] += lr * (z - reg * B[i_id])
+                # B[j_id] += lr * (-z - reg * B[j_id])
 
         return correct, skipped
 
@@ -228,16 +258,19 @@ class BPR(Recommender):
         unk_user = self.train_set.is_unk_user(user_id)
 
         if item_id is None:
-            known_item_scores = np.copy(self.i_biases)
-            if not unk_user:
-                fast_dot(self.u_factors[user_id], self.i_factors, known_item_scores)
+            if unk_user:
+                raise ScoreException("Can't make score prediction for user_id", user_id)
+            else:
+                known_item_scores = self.i_factors.dot(self.u_factors[user_id, :])
+                # fast_dot(self.u_factors[user_id], self.i_factors, known_item_scores)
             return known_item_scores
         else:
-            if self.train_set.is_unk_item(item_id):
+            if self.train_set.is_unk_item(item_id) or unk_user:
                 raise ScoreException("Can't make score prediction for (user_id=%d, item_id=%d)" % (user_id, item_id))
-            item_score = self.i_biases[item_id]
-            if not unk_user:
-                item_score += np.dot(self.u_factors[user_id], self.i_factors[item_id])
+            # item_score = self.i_biases[item_id]
+            # if not unk_user:
+            item_score = np.dot(self.u_factors[user_id], self.i_factors[item_id])
             if self.train_set.min_rating != self.train_set.max_rating:
                 item_score = scale(item_score, self.train_set.min_rating, self.train_set.max_rating, 0., 1.)
             return item_score
+

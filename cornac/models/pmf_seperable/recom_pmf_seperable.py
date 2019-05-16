@@ -5,6 +5,7 @@
 """
 
 import numpy as np
+import copy
 from ..recommender import Recommender
 from ...utils.common import sigmoid
 from ...utils.common import scale
@@ -64,20 +65,43 @@ class PMF_seperable(Recommender):
         Recommender.__init__(self, name=name, trainable=trainable, verbose=verbose)
         self.k = k
         self.init_params = init_params
+        self.params = copy.deepcopy(init_params)
         self.max_iter = max_iter
         self.learning_rate = learning_rate
         self.gamma = gamma
         self.lamda = lamda
         self.variant = variant
         self.fixedParameter = fixedParameter
+        self.U = init_params.get('U')
+        self.V = init_params.get('V')
 
         self.ll = np.full(max_iter, 0)
         self.eps = 0.000000001
-        self.U = self.init_params.get('U')  # matrix of user factors
-        self.V = self.init_params.get('V')  # matrix of item factors
         self.seed = seed
 
     # fit the recommender model to the traning data
+
+    def loadParameter(self, train_set):
+
+        if self.init_params.get('U') is not None:
+            print("load U")
+            emptyU = np.zeros([train_set.num_users, self.k])
+            initialU = self.init_params.get('U')
+            for oldindex, newindex in train_set.uid_map.items():
+                emptyU[newindex, :] = initialU[int(oldindex), :]
+            self.U = np.copy(emptyU)
+            self.params["U"] = np.copy(emptyU)
+
+        if self.init_params.get('V') is not None:
+            print("load V")
+            emptyV = np.zeros([train_set.num_items, self.k])
+            initialV = self.init_params.get('V')
+            for oldindex, newindex in train_set.iid_map.items():
+                emptyV[newindex, :] = initialV[int(oldindex), :]
+            self.params["V"] = np.copy(emptyV)
+            self.V = np.copy(emptyV)
+
+
     def fit(self, train_set):
         """Fit the model to observations.
 
@@ -89,19 +113,7 @@ class PMF_seperable(Recommender):
             Please refer to the class TrainSet in the "data" module for details.
         """
 
-        if self.U is not None:
-            U = np.zeros([train_set.num_users, self.k])
-            initialU = np.copy(self.U)
-            for oldindex, newindex in train_set.uid_map.items():
-                U[newindex, :] = initialU[int(oldindex), :]
-                self.U = np.copy(U)
-
-        if self.V is not None:
-            V = np.zeros([train_set.num_items, self.k])
-            initialV = np.copy(self.V)
-            for oldindex, newindex in train_set.iid_map.items():
-                V[newindex, :] = initialV[int(oldindex), :]
-                self.V = np.copy(V)
+        self.loadParameter(train_set)
 
         from cornac.models.pmf_seperable import pmf_seperable
 
@@ -124,18 +136,14 @@ class PMF_seperable(Recommender):
                                                    n_items=train_set.num_items, n_ratings=len(rat),
                                                    n_epochs=self.max_iter,
                                                    lamda=self.lamda, learning_rate=self.learning_rate, gamma=self.gamma,
-                                                   init_params=self.init_params, verbose=self.verbose, seed=self.seed)
+                                                   init_params = copy.deepcopy(self.params), verbose=self.verbose, seed=self.seed, fixed = self.fixedParameter)
 
             if self.fixedParameter == "V":
                 print("keep initial V")
             else:
                 self.V = np.asarray(res['V'])
 
-            if self.fixedParameter == "U":
-                print("keep initial U")
-            else:
-                self.U = np.asarray(res['U'])
-
+            self.U = np.asarray(res['U'])
             if self.verbose:
                 print('Learning completed')
 

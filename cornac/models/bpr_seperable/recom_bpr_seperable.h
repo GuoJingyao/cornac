@@ -1,5 +1,5 @@
-#ifndef RECOM_BPR_H_
-#define RECOM_BPR_H_
+#ifndef RECOM_BPR_SEPERABLE_H_
+#define RECOM_BPR_SEPERABLE_H_
 
 // We need to get the thread number to figure out which RNG to use,
 // but this will fail on OSX etc if we have no openmp enabled compiler.
@@ -9,7 +9,7 @@
 #include <omp.h>
 #endif
 
-namespace recom_bpr {
+namespace recom_bpr_seperable {
 #ifdef _OPENMP
 inline int get_thread_num() { return omp_get_thread_num(); }
 #else

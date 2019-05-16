@@ -3,12 +3,13 @@ from cornac.datasets import movielens
 from cornac.models import BPR_seperable
 from cornac.eval_methods import BaseMethod
 import random
+from cornac.data import Reader
 import numpy
 from sklearn.model_selection import train_test_split
 from cornac.utils.data_utils import *
 
 # Load the MovieLens dataset
-rawdata = movielens.load_100k()
+rawdata = cornac.datasets.movielens.load_100k(reader=Reader(bin_threshold=1.0))
 data = numpy.unique(rawdata, axis=0)
 users = list(numpy.unique(data[:, 0]))
 
@@ -19,8 +20,8 @@ indexS = numpy.isin(valid_data[:, 0], experimentSet)
 indexB = numpy.isin(valid_data[:, 0], experimentSet, invert=True)
 SourceData = valid_data[indexB, :]
 TargetData = valid_data[indexS, :]
-print("Soucedata size", SourceData.size)
-print("TargetData size", TargetData.size)
+print("Soucedata size", SourceData.shape[0])
+print("TargetData size", TargetData.shape[0])
 
 u_max = max(valid_data[:, 0].astype(int)) + 1
 i_max = max(valid_data[:, 1].astype(int)) + 1
@@ -31,7 +32,7 @@ initialV = numpy.random.normal(loc=0.0, scale=1.0, size=i_max * 10).reshape(i_ma
 
 import scipy.io
 
-scipy.io.savemat("initailP", {"initialU": initialU, "initailV": initialV})
+# scipy.io.savemat("initailP", {"initialU": initialU, "initailV": initialV})
 # load initial parameters
 # parameters = loadmat("init_parameters.mat")
 # initialU = parameters['U']
@@ -49,11 +50,11 @@ res_RECALL20 = numpy.empty((3, 0))
 res_PRECISION20 = numpy.empty((3, 0))
 res_AUC = numpy.empty((3, 0))
 
-maxiter = 20
+maxiter = 200
 
 # Instantiate a baseline PMF recommender model and then run an experiment.
-pmf_pretrain = BPR_seperable(k=10, max_iter=20, learning_rate=0.001, lamda=0.001,
-                             init_params={'V': numpy.copy(initialV), 'U': numpy.copy(initialU)})
+pmf_pretrain = BPR_seperable(k=10, max_iter=200, learning_rate=0.001, lambda_reg=0.01,
+                              init_params={'V': numpy.copy(initialV), 'U': numpy.copy(initialU)})
 
 # pretrain V
 Strain_Ttest = BaseMethod.from_splits(train_data=SourceData, test_data=TargetData, exclude_unknowns=False,
@@ -63,17 +64,17 @@ exp_pretrainV = cornac.Experiment(eval_method=Strain_Ttest, models=[pmf_pretrain
 exp_pretrainV.run()
 trainedV = numpy.copy(initialV)
 for oldindex, newindex in Strain_Ttest.train_set.iid_map.items():
-    trainedV[int(oldindex), :] = pmf_pretrain.V[newindex, :]
+    trainedV[int(oldindex), :] = pmf_pretrain.i_factors[newindex, :]
 
 scipy.io.savemat("trainedV", {"trainedV": trainedV, "SourceData": SourceData, "TargetData": TargetData})
 
 # trainedV=loadmat("trainedV.mat")['trainedV']
 
-pmf_baseline = BPR_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lamda=0.001,
+pmf_baseline = BPR_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lambda_reg=0.001,
                              init_params={'V': numpy.copy(initialV), 'U': numpy.copy(initialU)}, verbose=True)
-pmf_fixV = BPR_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lamda=0.001, fixedParameter='V',
+pmf_fixV = BPR_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lambda_reg=0.001, fixedParameter='V',
                          init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU)}, verbose=True)
-pmf_transferV = BPR_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lamda=0.001,
+pmf_transferV = BPR_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lambda_reg=0.001,
                               init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU)}, verbose=True)
 
 for Tration in range(5, 100, 5):
@@ -90,8 +91,8 @@ for Tration in range(5, 100, 5):
         sparse_target_train = numpy.vstack((sparse_target_train, Utrain))
         target_test = numpy.vstack((target_test, Utest))
 
-    print("sparse_target_train size", sparse_target_train.size)
-    print("target_test size", target_test.size)
+    print("sparse_target_train size", sparse_target_train.shape[0])
+    print("target_test size", target_test.shape[0])
 
     Tsparsetrain_Ttest = BaseMethod.from_splits(train_data=sparse_target_train, test_data=target_test,
                                                 exclude_unknowns=False, verbose=True)
@@ -108,13 +109,13 @@ for Tration in range(5, 100, 5):
                                       metrics=[mae, rmse, rec_20, pre_20, auc], user_based=True)
     exp_transferV.run()
 
-    res_MAE = numpy.hstack((res_MAE, np.array(
-        [[exp_Baseline.result[0].metric_avg_results.get("MAE")], [exp_fixV.result[0].metric_avg_results.get("MAE")],
-         [exp_transferV.result[0].metric_avg_results.get("MAE")]])))
-
-    res_RMSE = numpy.hstack((res_RMSE, np.array(
-        [[exp_Baseline.result[0].metric_avg_results.get("RMSE")], [exp_fixV.result[0].metric_avg_results.get("RMSE")],
-         [exp_transferV.result[0].metric_avg_results.get("RMSE")]])))
+    # res_MAE = numpy.hstack((res_MAE, np.array(
+    #     [[exp_Baseline.result[0].metric_avg_results.get("MAE")], [exp_fixV.result[0].metric_avg_results.get("MAE")],
+    #      [exp_transferV.result[0].metric_avg_results.get("MAE")]])))
+    #
+    # res_RMSE = numpy.hstack((res_RMSE, np.array(
+    #     [[exp_Baseline.result[0].metric_avg_results.get("RMSE")], [exp_fixV.result[0].metric_avg_results.get("RMSE")],
+    #      [exp_transferV.result[0].metric_avg_results.get("RMSE")]])))
 
     res_RECALL20 = numpy.hstack((res_RECALL20, np.array(
         [[exp_Baseline.result[0].metric_avg_results.get("Recall@100")],
@@ -136,13 +137,13 @@ for Tration in range(5, 100, 5):
 
 import pandas as pd
 
-table_MAE = pd.DataFrame(res_MAE)
-filepath = 'MAE.xlsx'
-table_MAE.to_excel(filepath, index=False)
-
-table_RMSE = pd.DataFrame(res_RMSE)
-filepath = 'RMSE.xlsx'
-table_RMSE.to_excel(filepath, index=False)
+# table_MAE = pd.DataFrame(res_MAE)
+# filepath = 'MAE.xlsx'
+# table_MAE.to_excel(filepath, index=False)
+#
+# table_RMSE = pd.DataFrame(res_RMSE)
+# filepath = 'RMSE.xlsx'
+# table_RMSE.to_excel(filepath, index=False)
 
 table_RECALL20 = pd.DataFrame(res_RECALL20)
 filepath = 'RECALL100.xlsx'

@@ -19,10 +19,10 @@ ml_100k = movielens.load_100k()
 # Instantiate an evaluation method.
 ratio_split = RatioSplit(data=ml_100k, test_size=0.2, rating_threshold=4.0, exclude_unknowns=False)
 
-# Instantiate a PMF recommender model.
-pmf = PMF_seperable(k=10, max_iter=10, learning_rate=0.001, lamda=0.001,verbose=True,
-                    init_params={'V':np.random.normal(loc=0.0, scale=1.0, size=(2000, 10))}, fixedParameter="V")
-# pmf = PMF(k=10, max_iter=100, learning_rate=0.001, lamda=0.001)
+# # Instantiate a PMF recommender model.
+# pmf = PMF_seperable(k=10, max_iter=10, learning_rate=0.001, lamda=0.001,verbose=True,
+#                     init_params={'V':np.random.normal(loc=0.0, scale=1.0, size=(2000, 10))}, fixedParameter="V")
+pmf = PMF_seperable(k=10, max_iter=100, learning_rate=0.001, lamda=0.001, verbose=True)
 
 # Instantiate evaluation metrics.
 mae = cornac.metrics.MAE()

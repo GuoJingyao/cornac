@@ -16,4 +16,5 @@ from .conv_mf import *
 from .cdr import *
 from .sorec import *
 from .pmf_seperable import *
+from .bpr_seperable import *
 

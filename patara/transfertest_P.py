@@ -2,6 +2,7 @@ import cornac
 from cornac.datasets import movielens
 from cornac.models import PMF_seperable
 from cornac.eval_methods import BaseMethod
+from cornac.data import Reader
 import random
 import numpy
 from sklearn.model_selection import train_test_split
@@ -9,7 +10,9 @@ from cornac.utils.data_utils import *
 
 # Load the MovieLens dataset
 rawdata = movielens.load_1m()
+# rawdata = cornac.datasets.netflix.load_data(reader=Reader(bin_threshold=1.0))
 data = numpy.unique(rawdata, axis=0)
+# data = numpy.asarray(rawdata)
 users = list(numpy.unique(data[:, 0]))
 
 valid_data, validUsers, validItems = Dataset(data).index_trans()
@@ -70,12 +73,14 @@ scipy.io.savemat("trainedV", {"trainedV": trainedV, "SourceData": SourceData, "T
 # trainedV=loadmat("trainedV.mat")['trainedV']
 
 pmf_baseline = PMF_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lamda=0.001,
-                             init_params={'V': numpy.copy(initialV), 'U': numpy.copy(initialU)}, verbose=True)
+                             init_params={'V': numpy.copy(initialV), 'U': numpy.copy(initialU)}, verbose=False)
 pmf_fixV = PMF_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lamda=0.001, fixedParameter='V',
-                         init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU)}, verbose=True)
+                         init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU)}, verbose=False)
 pmf_transferV = PMF_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lamda=0.001,
-                              init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU)}, verbose=True)
+                              init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU)}, verbose=False)
 
+changeV = []
+changeU = []
 for Tration in range(5, 100, 5):
 
     # sparse target training data
@@ -108,6 +113,9 @@ for Tration in range(5, 100, 5):
                                       metrics=[mae, rmse, rec_20, pre_20, auc], user_based=True)
     exp_transferV.run()
 
+    # changeV.append(np.mean(np.absolute(pmf_transferV.V-pmf_transferV.params.get("V"))))
+    # changeU.append(np.mean(np.absolute(pmf_transferV.U - pmf_transferV.params.get("U"))))
+
     res_MAE = numpy.hstack((res_MAE, np.array(
         [[exp_Baseline.result[0].metric_avg_results.get("MAE")], [exp_fixV.result[0].metric_avg_results.get("MAE")],
          [exp_transferV.result[0].metric_avg_results.get("MAE")]])))
@@ -130,9 +138,9 @@ for Tration in range(5, 100, 5):
         [[exp_Baseline.result[0].metric_avg_results.get("AUC")], [exp_fixV.result[0].metric_avg_results.get("AUC")],
          [exp_transferV.result[0].metric_avg_results.get("AUC")]])))
 
-# print("res_MAE, Baseline", res_MAE[0, :])
-# print("res_MAE, fixV", res_MAE[1, :])
-# print("res_MAE, transferV", res_MAE[2, :])
+print("res_MAE, Baseline", res_MAE[0, :])
+print("res_MAE, fixV", res_MAE[1, :])
+print("res_MAE, transferV", res_MAE[2, :])
 
 import pandas as pd
 
