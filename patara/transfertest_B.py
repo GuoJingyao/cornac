@@ -5,6 +5,8 @@ from cornac.eval_methods import BaseMethod
 import random
 from cornac.data import Reader
 import numpy
+import scipy.io
+import pickle
 from sklearn.model_selection import train_test_split
 from cornac.utils.data_utils import *
 
@@ -12,31 +14,34 @@ from cornac.utils.data_utils import *
 rawdata = cornac.datasets.movielens.load_100k(reader=Reader(bin_threshold=1.0))
 data = numpy.unique(rawdata, axis=0)
 users = list(numpy.unique(data[:, 0]))
+items = list(numpy.unique(data[:, 1]))
 
-valid_data, validUsers, validItems = Dataset(data).index_trans()
 # build source and target dataset
 experimentSet = random.sample(users, round(len(users) * 0.2))  # save 20% users as experiment set
-indexS = numpy.isin(valid_data[:, 0], experimentSet)
-indexB = numpy.isin(valid_data[:, 0], experimentSet, invert=True)
-SourceData = valid_data[indexB, :]
-TargetData = valid_data[indexS, :]
+indexS = numpy.isin(data[:, 0], experimentSet)
+indexB = numpy.isin(data[:, 0], experimentSet, invert=True)
+SourceData = data[indexB, :]
+TargetData = data[indexS, :]
 print("Soucedata size", SourceData.shape[0])
 print("TargetData size", TargetData.shape[0])
 
-u_max = max(valid_data[:, 0].astype(int)) + 1
-i_max = max(valid_data[:, 1].astype(int)) + 1
+initialU = numpy.random.normal(loc=0.0, scale=1.0, size=len(users) * 10).reshape(len(users), 10)
+initialV = numpy.random.normal(loc=0.0, scale=1.0, size=len(items) * 10).reshape(len(items), 10)
 
-# the user and item index corresponding to the valid_data set index
-initialU = numpy.random.normal(loc=0.0, scale=1.0, size=u_max * 10).reshape(u_max, 10)
-initialV = numpy.random.normal(loc=0.0, scale=1.0, size=i_max * 10).reshape(i_max, 10)
+# global dictionary contains sorce data and target data
+# key: raw data index, value: index for initial feature vector
+globalD_users = dict(zip(users, list(range(len(users)))))
+globalD_items = dict(zip(items, list(range(len(items)))))
+#
+scipy.io.savemat("initailSetting", {"SourceData": SourceData, "TargetData": TargetData, "initialU": initialU,
+                                     "initialV": initialV})
 
-import scipy.io
-
-# scipy.io.savemat("initailP", {"initialU": initialU, "initailV": initialV})
-# load initial parameters
-# parameters = loadmat("init_parameters.mat")
-# initialU = parameters['U']
-# initialV = parameters['V']
+# # load initial setting
+# parameters = scipy.io.loadmat("initailSetting.mat")
+# initialU = parameters['initialU']
+# initialV = parameters['initialV']
+# SourceData = parameters['SourceData']
+# TargetData = parameters['TargetData']
 
 mae = cornac.metrics.MAE()
 rmse = cornac.metrics.RMSE()
@@ -49,33 +54,31 @@ res_RMSE = numpy.empty((3, 0))
 res_RECALL20 = numpy.empty((3, 0))
 res_PRECISION20 = numpy.empty((3, 0))
 res_AUC = numpy.empty((3, 0))
-
 maxiter = 200
 
-# Instantiate a baseline PMF recommender model and then run an experiment.
-pmf_pretrain = BPR_seperable(k=10, max_iter=200, learning_rate=0.001, lambda_reg=0.01,
-                              init_params={'V': numpy.copy(initialV), 'U': numpy.copy(initialU)})
-
-# pretrain V
 Strain_Ttest = BaseMethod.from_splits(train_data=SourceData, test_data=TargetData, exclude_unknowns=False,
                                       verbose=True)
-exp_pretrainV = cornac.Experiment(eval_method=Strain_Ttest, models=[pmf_pretrain],
+# Instantiate a baseline PMF recommender model and then run an experiment.
+pretrain = BPR_seperable(k=10, max_iter=200, learning_rate=0.001, lambda_reg=0.01,
+                              init_params={'V': numpy.copy(initialV), 'U': numpy.copy(initialU), 'globalD_users': globalD_users, 'globalD_items': globalD_items})
+exp_pretrainV = cornac.Experiment(eval_method=Strain_Ttest, models=[pretrain],
                                   metrics=[mae, rmse, rec_20, pre_20], user_based=True)
 exp_pretrainV.run()
+
 trainedV = numpy.copy(initialV)
 for oldindex, newindex in Strain_Ttest.train_set.iid_map.items():
-    trainedV[int(oldindex), :] = pmf_pretrain.i_factors[newindex, :]
+    trainedV[globalD_items.get(oldindex), :] = pretrain.i_factors[newindex, :]
 
-scipy.io.savemat("trainedV", {"trainedV": trainedV, "SourceData": SourceData, "TargetData": TargetData})
+scipy.io.savemat("trainedV", {"trainedV": trainedV})
 
-# trainedV=loadmat("trainedV.mat")['trainedV']
+# # trainedV=loadmat("trainedV.mat")['trainedV']
 
-pmf_baseline = BPR_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lambda_reg=0.001,
-                             init_params={'V': numpy.copy(initialV), 'U': numpy.copy(initialU)}, verbose=True)
-pmf_fixV = BPR_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lambda_reg=0.001, fixedParameter='V',
-                         init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU)}, verbose=True)
-pmf_transferV = BPR_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lambda_reg=0.001,
-                              init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU)}, verbose=True)
+baseline = BPR_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lambda_reg=0.001,
+                        init_params={'V': numpy.copy(initialV), 'U': numpy.copy(initialU), 'globalD_users': globalD_users, 'globalD_items': globalD_items}, verbose=True)
+fixV = BPR_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lambda_reg=0.001, fixedParameter='V',
+                    init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU), 'globalD_users': globalD_users, 'globalD_items': globalD_items}, verbose=True)
+transferV = BPR_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lambda_reg=0.001,
+                        init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU), 'globalD_users': globalD_users, 'globalD_items': globalD_items}, verbose=True)
 
 for Tration in range(5, 100, 5):
 
@@ -97,15 +100,15 @@ for Tration in range(5, 100, 5):
     Tsparsetrain_Ttest = BaseMethod.from_splits(train_data=sparse_target_train, test_data=target_test,
                                                 exclude_unknowns=False, verbose=True)
 
-    exp_Baseline = cornac.Experiment(eval_method=Tsparsetrain_Ttest, models=[pmf_baseline],
+    exp_Baseline = cornac.Experiment(eval_method=Tsparsetrain_Ttest, models=[baseline],
                                      metrics=[mae, rmse, rec_20, pre_20, auc], user_based=True)
     exp_Baseline.run()
 
-    exp_fixV = cornac.Experiment(eval_method=Tsparsetrain_Ttest, models=[pmf_fixV],
+    exp_fixV = cornac.Experiment(eval_method=Tsparsetrain_Ttest, models=[fixV],
                                  metrics=[mae, rmse, rec_20, pre_20, auc], user_based=True)
     exp_fixV.run()
 
-    exp_transferV = cornac.Experiment(eval_method=Tsparsetrain_Ttest, models=[pmf_transferV],
+    exp_transferV = cornac.Experiment(eval_method=Tsparsetrain_Ttest, models=[transferV],
                                       metrics=[mae, rmse, rec_20, pre_20, auc], user_based=True)
     exp_transferV.run()
 

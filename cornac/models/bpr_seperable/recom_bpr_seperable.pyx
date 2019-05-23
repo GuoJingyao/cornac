@@ -95,6 +95,8 @@ class BPR_seperable(Recommender):
         self.fixedParameter = fixedParameter
         self.u_factors = np.copy(init_params.get('U'))
         self.i_factors = np.copy(init_params.get('V'))
+        self.globalD_users = init_params.get('globalD_users')
+        self.globalD_items = init_params.get('globalD_items')
 
         import multiprocessing
         if num_threads > 0 and num_threads < multiprocessing.cpu_count():
@@ -126,7 +128,7 @@ class BPR_seperable(Recommender):
             V = np.zeros([train_set.num_items, self.k])
             initialV = np.copy(self.init_params.get('V'))
             for oldindex, newindex in train_set.iid_map.items():
-                V[newindex, :] = initialV[int(oldindex), :]
+                V[newindex, :] = initialV[self.globalD_items.get(oldindex), :]
                 self.i_factors = np.copy(V)
                 self.i_factors = np.asarray(self.i_factors,dtype=np.float32)
         else:
@@ -136,7 +138,7 @@ class BPR_seperable(Recommender):
             U = np.zeros([train_set.num_users, self.k])
             initialU = np.copy(self.init_params.get('U'))
             for oldindex, newindex in train_set.uid_map.items():
-                U[newindex, :] = initialU[int(oldindex), :]
+                U[newindex, :] = initialU[self.globalD_users.get(oldindex), :]
                 self.u_factors = np.copy(U)
                 self.u_factors = np.asarray(self.u_factors, dtype=np.float32)
         else:
