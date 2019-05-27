@@ -9,32 +9,31 @@ from sklearn.model_selection import train_test_split
 from cornac.utils.data_utils import *
 
 # Load the MovieLens dataset
-rawdata = movielens.load_1m()
-# rawdata = cornac.datasets.netflix.load_data(reader=Reader(bin_threshold=1.0))
+rawdata = movielens.load_100k()
 data = numpy.unique(rawdata, axis=0)
 # data = numpy.asarray(rawdata)
 users = list(numpy.unique(data[:, 0]))
+items = list(numpy.unique(data[:, 1]))
 
-valid_data, validUsers, validItems = Dataset(data).index_trans()
 # build source and target dataset
 experimentSet = random.sample(users, round(len(users) * 0.2))  # save 20% users as experiment set
-indexS = numpy.isin(valid_data[:, 0], experimentSet)
-indexB = numpy.isin(valid_data[:, 0], experimentSet, invert=True)
-SourceData = valid_data[indexB, :]
-TargetData = valid_data[indexS, :]
-print("Soucedata size", SourceData.size)
-print("TargetData size", TargetData.size)
+indexS = numpy.isin(data[:, 0], experimentSet)
+indexB = numpy.isin(data[:, 0], experimentSet, invert=True)
+SourceData = data[indexB, :]
+TargetData = data[indexS, :]
+print("Soucedata size", SourceData.shape[0])
+print("TargetData size", TargetData.shape[0])
 
-u_max = max(valid_data[:, 0].astype(int)) + 1
-i_max = max(valid_data[:, 1].astype(int)) + 1
-
-# the user and item index corresponding to the valid_data set index
-initialU = numpy.random.normal(loc=0.0, scale=1.0, size=u_max * 10).reshape(u_max, 10)
-initialV = numpy.random.normal(loc=0.0, scale=1.0, size=i_max * 10).reshape(i_max, 10)
+initialU = numpy.random.normal(loc=0.0, scale=1.0, size=len(users) * 10).reshape(len(users), 10)
+initialV = numpy.random.normal(loc=0.0, scale=1.0, size=len(items) * 10).reshape(len(items), 10)
 
 import scipy.io
 
-scipy.io.savemat("initailP", {"initialU": initialU, "initailV": initialV})
+globalD_users = dict(zip(users, list(range(len(users)))))
+globalD_items = dict(zip(items, list(range(len(items)))))
+#
+scipy.io.savemat("initailSetting", {"SourceData": SourceData, "TargetData": TargetData, "initialU": initialU,
+                                     "initialV": initialV})
 # load initial parameters
 # parameters = loadmat("init_parameters.mat")
 # initialU = parameters['U']
@@ -56,7 +55,7 @@ maxiter = 200
 
 # Instantiate a baseline PMF recommender model and then run an experiment.
 pmf_pretrain = PMF_seperable(k=10, max_iter=200, learning_rate=0.001, lamda=0.001,
-                             init_params={'V': numpy.copy(initialV), 'U': numpy.copy(initialU)})
+                             init_params={'V': numpy.copy(initialV), 'U': numpy.copy(initialU), 'globalD_users': globalD_users, 'globalD_items': globalD_items},)
 
 # pretrain V
 Strain_Ttest = BaseMethod.from_splits(train_data=SourceData, test_data=TargetData, exclude_unknowns=False,
@@ -64,20 +63,19 @@ Strain_Ttest = BaseMethod.from_splits(train_data=SourceData, test_data=TargetDat
 exp_pretrainV = cornac.Experiment(eval_method=Strain_Ttest, models=[pmf_pretrain],
                                   metrics=[mae, rmse, rec_20, pre_20], user_based=True)
 exp_pretrainV.run()
+
 trainedV = numpy.copy(initialV)
 for oldindex, newindex in Strain_Ttest.train_set.iid_map.items():
-    trainedV[int(oldindex), :] = pmf_pretrain.V[newindex, :]
+    trainedV[globalD_items.get(oldindex), :] = pmf_pretrain.V[newindex, :]
 
 scipy.io.savemat("trainedV", {"trainedV": trainedV, "SourceData": SourceData, "TargetData": TargetData})
 
-# trainedV=loadmat("trainedV.mat")['trainedV']
-
 pmf_baseline = PMF_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lamda=0.001,
-                             init_params={'V': numpy.copy(initialV), 'U': numpy.copy(initialU)}, verbose=False)
+                             init_params={'V': numpy.copy(initialV), 'U': numpy.copy(initialU), 'globalD_users': globalD_users, 'globalD_items': globalD_items}, verbose=False)
 pmf_fixV = PMF_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lamda=0.001, fixedParameter='V',
-                         init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU)}, verbose=False)
+                         init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU), 'globalD_users': globalD_users, 'globalD_items': globalD_items}, verbose=False)
 pmf_transferV = PMF_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lamda=0.001,
-                              init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU)}, verbose=False)
+                              init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU), 'globalD_users': globalD_users, 'globalD_items': globalD_items}, verbose=False)
 
 changeV = []
 changeU = []

@@ -61,7 +61,7 @@ class PMF_seperable(Recommender):
     """
 
     def __init__(self, k=5, max_iter=100, learning_rate=0.001, gamma=0.9, lamda=0.001, name="PMF", variant='non_linear',
-                 trainable=True, verbose=False, fixedParameter=None, init_params={}, seed = None):
+                 trainable=True, verbose=False, fixedParameter=None, init_params={}, seed = None,):
         Recommender.__init__(self, name=name, trainable=trainable, verbose=verbose)
         self.k = k
         self.init_params = init_params
@@ -74,6 +74,8 @@ class PMF_seperable(Recommender):
         self.fixedParameter = fixedParameter
         self.U = init_params.get('U')
         self.V = init_params.get('V')
+        self.globalD_users = init_params.get('globalD_users')
+        self.globalD_items = init_params.get('globalD_items')
 
         self.ll = np.full(max_iter, 0)
         self.eps = 0.000000001
@@ -88,7 +90,7 @@ class PMF_seperable(Recommender):
             emptyU = np.zeros([train_set.num_users, self.k])
             initialU = self.init_params.get('U')
             for oldindex, newindex in train_set.uid_map.items():
-                emptyU[newindex, :] = initialU[int(oldindex), :]
+                emptyU[newindex, :] = initialU[self.globalD_users.get(oldindex), :]
             self.U = np.copy(emptyU)
             self.params["U"] = np.copy(emptyU)
 
@@ -97,7 +99,7 @@ class PMF_seperable(Recommender):
             emptyV = np.zeros([train_set.num_items, self.k])
             initialV = self.init_params.get('V')
             for oldindex, newindex in train_set.iid_map.items():
-                emptyV[newindex, :] = initialV[int(oldindex), :]
+                emptyV[newindex, :] = initialV[self.globalD_items.get(oldindex), :]
             self.params["V"] = np.copy(emptyV)
             self.V = np.copy(emptyV)
 
