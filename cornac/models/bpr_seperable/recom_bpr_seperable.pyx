@@ -95,6 +95,7 @@ class BPR_seperable(Recommender):
         self.fixedParameter = fixedParameter
         self.u_factors = np.copy(init_params.get('U'))
         self.i_factors = np.copy(init_params.get('V'))
+        self.i_biases = np.copy(init_params.get('Bi'))
         self.globalD_users = init_params.get('globalD_users')
         self.globalD_items = init_params.get('globalD_items')
 
@@ -129,8 +130,8 @@ class BPR_seperable(Recommender):
             initialV = np.copy(self.init_params.get('V'))
             for oldindex, newindex in train_set.iid_map.items():
                 V[newindex, :] = initialV[self.globalD_items.get(oldindex), :]
-                self.i_factors = np.copy(V)
-                self.i_factors = np.asarray(self.i_factors,dtype=np.float32)
+            self.i_factors = np.copy(V)
+            self.i_factors = np.asarray(self.i_factors,dtype=np.float32)
         else:
             self.i_factors = self.init_params.get('V', (uniform((n_items, self.k), random_state=rng) - 0.5) / self.k)
 
@@ -139,10 +140,20 @@ class BPR_seperable(Recommender):
             initialU = np.copy(self.init_params.get('U'))
             for oldindex, newindex in train_set.uid_map.items():
                 U[newindex, :] = initialU[self.globalD_users.get(oldindex), :]
-                self.u_factors = np.copy(U)
-                self.u_factors = np.asarray(self.u_factors, dtype=np.float32)
+            self.u_factors = np.copy(U)
+            self.u_factors = np.asarray(self.u_factors, dtype=np.float32)
         else:
             self.u_factors = self.init_params.get('U', (uniform((n_users, self.k), random_state=rng) - 0.5) / self.k)
+
+        if self.init_params.get('Bi') is not None:
+            Bi = np.zeros(n_items)
+            initialBi = np.copy(self.init_params.get('Bi'))
+            for oldindex, newindex in train_set.iid_map.items():
+                Bi[newindex] = initialBi[self.globalD_items.get(oldindex)]
+            self.i_biases = np.copy(Bi)
+            self.i_biases = np.asarray(self.i_biases,dtype=np.float32)
+        else:
+            self.i_biases = self.init_params.get('Bi', zeros(n_items))
 
         if not self.trainable:
             return
@@ -162,22 +173,18 @@ class BPR_seperable(Recommender):
             for epoch in progress:
                 correct, skipped = self._fit_sgd(rng_pos, rng_neg, num_threads,
                                                  user_ids, X.indices, X.indptr,
-                                                 self.u_factors, self.i_factors, fixed = self.fixedParameter)
+                                                 self.u_factors, self.i_factors, self.i_biases, fixed = self.fixedParameter)
                 progress.set_postfix({"correct": "%.2f%%" % (100.0 * correct / (len(user_ids) - skipped)),
                                       "skipped": "%.2f%%" % (100.0 * skipped / n_items)})
         if self.verbose:
             print('Optimization finished!')
-        # if self.fixedParameter == 'V':
-        #     self.i_factors = self.init_params['V']
-        #     print("fix item factors!")
-
 
     @cython.cdivision(True)
     @cython.boundscheck(False)
     @cython.wraparound(False)
     def _fit_sgd(self, RNGVector rng_pos, RNGVector rng_neg, int num_threads,
                  integral[:] user_ids, integral[:] item_ids, integral[:] indptr,
-                 floating[:, :] U, floating[:, :] V, fixed=None):
+                 floating[:, :] U, floating[:, :] V, floating[:] B, fixed=None):
         """Fit the model parameters (U, V, B) with SGD
         """
         cdef:
@@ -211,30 +218,26 @@ class BPR_seperable(Recommender):
                 user, item_i, item_j = &U[user_ids[i_index], 0], &V[i_id, 0], &V[j_id, 0]
 
                 # compute the score
-                # score = B[i_id] - B[j_id]
+                score = B[i_id] - B[j_id]
                 for f in range(factors):
                     score = user[f] * (item_i[f] - item_j[f])
-                    # score = score + user[f] * (item_i[f] - item_j[f])
+                    score = score + user[f] * (item_i[f] - item_j[f])
                 z = 1.0 / (1.0 + exp(score))
 
                 if z < .5:
                     correct += 1
 
-                if fixed == 'V':
-                    for f in range(factors):
-                        temp = user[f]
-                        user[f] += lr * (z * (item_i[f] - item_j[f]) - reg * user[f])
-                else:
-                    # update the factors via sgd.
-                    for f in range(factors):
-                        temp = user[f]
-                        user[f] += lr * (z * (item_i[f] - item_j[f]) - reg * user[f])
+                # update the factors via sgd.
+                for f in range(factors):
+                    temp = user[f]
+                    user[f] += lr * (z * (item_i[f] - item_j[f]) - reg * user[f])
+                    if fixed != 'V':
                         item_i[f] += lr * (z * temp - reg * item_i[f])
                         item_j[f] += lr * (-z * temp - reg * item_j[f])
 
-                # # update item biases
-                # B[i_id] += lr * (z - reg * B[i_id])
-                # B[j_id] += lr * (-z - reg * B[j_id])
+                # update item biases
+                B[i_id] += lr * (z - reg * B[i_id])
+                B[j_id] += lr * (-z - reg * B[j_id])
 
         return correct, skipped
 
@@ -260,19 +263,34 @@ class BPR_seperable(Recommender):
         unk_user = self.train_set.is_unk_user(user_id)
 
         if item_id is None:
-            if unk_user:
-                raise ScoreException("Can't make score prediction for user_id", user_id)
-            else:
-                known_item_scores = self.i_factors.dot(self.u_factors[user_id, :])
-                # fast_dot(self.u_factors[user_id], self.i_factors, known_item_scores)
+            known_item_scores = np.copy(self.i_biases)
+            if not unk_user:
+                fast_dot(self.u_factors[user_id], self.i_factors, known_item_scores)
             return known_item_scores
         else:
-            if self.train_set.is_unk_item(item_id) or unk_user:
+            if self.train_set.is_unk_item(item_id):
                 raise ScoreException("Can't make score prediction for (user_id=%d, item_id=%d)" % (user_id, item_id))
-            # item_score = self.i_biases[item_id]
-            # if not unk_user:
-            item_score = np.dot(self.u_factors[user_id], self.i_factors[item_id])
+            item_score = self.i_biases[item_id]
+            if not unk_user:
+                item_score += np.dot(self.u_factors[user_id], self.i_factors[item_id])
             if self.train_set.min_rating != self.train_set.max_rating:
                 item_score = scale(item_score, self.train_set.min_rating, self.train_set.max_rating, 0., 1.)
             return item_score
+
+        # if item_id is None:
+        #     if unk_user:
+        #         raise ScoreException("Can't make score prediction for user_id", user_id)
+        #     else:
+        #         known_item_scores = self.i_factors.dot(self.u_factors[user_id, :])
+        #         # fast_dot(self.u_factors[user_id], self.i_factors, known_item_scores)
+        #     return known_item_scores
+        # else:
+        #     if self.train_set.is_unk_item(item_id) or unk_user:
+        #         raise ScoreException("Can't make score prediction for (user_id=%d, item_id=%d)" % (user_id, item_id))
+        #     # item_score = self.i_biases[item_id]
+        #     # if not unk_user:
+        #     item_score = np.dot(self.u_factors[user_id], self.i_factors[item_id])
+        #     if self.train_set.min_rating != self.train_set.max_rating:
+        #         item_score = scale(item_score, self.train_set.min_rating, self.train_set.max_rating, 0., 1.)
+        #     return item_score
 

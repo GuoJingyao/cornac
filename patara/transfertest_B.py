@@ -9,11 +9,19 @@ import scipy.io
 import pickle
 from sklearn.model_selection import train_test_split
 from cornac.utils.data_utils import *
+from collections import Counter
 
 # Load the MovieLens dataset
-rawdata = cornac.datasets.movielens.load_100k(reader=Reader(bin_threshold=1.0))
+rawdata = cornac.datasets.netflix.load_data_small(reader=Reader(bin_threshold=1.0))
 data = numpy.unique(rawdata, axis=0)
-users = list(numpy.unique(data[:, 0]))
+
+c = Counter(data[:, 0]).most_common(100)
+users = list(numpy.asarray(c)[:, 0])
+index = numpy.isin(data[:, 0], users)
+data = data[index, :]
+
+# users = list(numpy.unique(data[:, 0]))
+print(len(users))
 items = list(numpy.unique(data[:, 1]))
 
 # build source and target dataset
