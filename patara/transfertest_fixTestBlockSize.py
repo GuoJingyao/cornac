@@ -136,34 +136,13 @@ for TestId in range(splitK):
         AUC[2][TestId][TrainSize-1] = exp_transferV.result[0].metric_avg_results.get("AUC")
 
 # import pandas as pd
-# table_RECALL20 = pd.DataFrame(REC[0])
+# table = pd.DataFrame(REC[0])
 # filepath = 'C:/Users\jyguo\Desktop/result/PMF/netflix_small/exp2/REC_baseline.xlsx'
-# table_RECALL20.to_excel(filepath, index=False)
-# table_RECALL20 = pd.DataFrame(REC[1])
+# table.to_excel(filepath, index=False)
+# table = pd.DataFrame(REC[1])
 # filepath = 'C:/Users\jyguo\Desktop/result/PMF/netflix_small/exp2/REC_fixV.xlsx'
-# table_RECALL20.to_excel(filepath, index=False)
-# table_RECALL20 = pd.DataFrame(REC[2])
+# table.to_excel(filepath, index=False)
+# table = pd.DataFrame(REC[2])
 # filepath = 'C:/Users\jyguo\Desktop/result/PMF/netflix_small/exp2/REC__transV.xlsx'
-# table_RECALL20.to_excel(filepath, index=False)
+# table.to_excel(filepath, index=False)
 
-# import pandas as pd
-#
-# table_MAE = pd.DataFrame(MAE)
-# filepath = 'C:/Users\jyguo\Desktop\movielens1m/MAE.xlsx'
-# table_MAE.to_excel(filepath, index=False)
-#
-# table_RMSE = pd.DataFrame(RMSE)
-# filepath = 'C:/Users\jyguo\Desktop\movielens1m/RMSE.xlsx'
-# table_RMSE.to_excel(filepath, index=False)
-#
-# table_RECALL20 = pd.DataFrame(REC)
-# filepath = '100k_RECALL100.xlsx'
-# table_RECALL20.to_excel(filepath, index=False)
-#
-# table_PRECISION20 = pd.DataFrame(PRE)
-# filepath = '100k_PRECISION100.xlsx'
-# table_PRECISION20.to_excel(filepath, index=False)
-#
-# table_AUC = pd.DataFrame(AUC)
-# filepath = '100k_AUC.xlsx'
-# table_AUC.to_excel(filepath, index=False)

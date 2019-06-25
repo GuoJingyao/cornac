@@ -11,7 +11,6 @@ from cornac.utils.data_utils import *
 # Load the MovieLens dataset
 rawdata = movielens.load_100k()
 data = numpy.unique(rawdata, axis=0)
-# data = numpy.asarray(rawdata)
 users = list(numpy.unique(data[:, 0]))
 items = list(numpy.unique(data[:, 1]))
 
@@ -77,8 +76,6 @@ pmf_fixV = PMF_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lamda=0.00
 pmf_transferV = PMF_seperable(k=10, max_iter=maxiter, learning_rate=0.001, lamda=0.001,
                               init_params={'V': numpy.copy(trainedV), 'U': numpy.copy(initialU), 'globalD_users': globalD_users, 'globalD_items': globalD_items}, verbose=False)
 
-changeV = []
-changeU = []
 for Tration in range(5, 100, 5):
 
     # sparse target training data
@@ -110,9 +107,6 @@ for Tration in range(5, 100, 5):
     exp_transferV = cornac.Experiment(eval_method=Tsparsetrain_Ttest, models=[pmf_transferV],
                                       metrics=[mae, rmse, rec_20, pre_20, auc], user_based=True)
     exp_transferV.run()
-
-    # changeV.append(np.mean(np.absolute(pmf_transferV.V-pmf_transferV.params.get("V"))))
-    # changeU.append(np.mean(np.absolute(pmf_transferV.U - pmf_transferV.params.get("U"))))
 
     res_MAE = numpy.hstack((res_MAE, np.array(
         [[exp_Baseline.result[0].metric_avg_results.get("MAE")], [exp_fixV.result[0].metric_avg_results.get("MAE")],

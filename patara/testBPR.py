@@ -61,14 +61,6 @@ exp_pretrainV = cornac.Experiment(eval_method=Strain_Ttest, models=[pmf_pretrain
                                   metrics=[mae, rmse, rec, pre], user_based=True)
 exp_pretrainV.run()
 
-
-# pmf_bas = BPR(k=10, max_iter=maxiter, learning_rate=0.001, lambda_reg=0.001)
-#
-# exp_bas = cornac.Experiment(eval_method=Strain_Ttest, models=[pmf_bas],
-#                                   metrics=[mae, rmse, rec, pre], user_based=True)
-# exp_bas.run()
-
-
 trainedV = numpy.copy(initialV)
 for oldindex, newindex in Strain_Ttest.train_set.iid_map.items():
     trainedV[globalD_items.get(oldindex), :] = pmf_pretrain.i_factors[newindex, :]
@@ -152,45 +144,34 @@ for TestId in range(splitK):
         AUC[0][TestId][TrainSize-1] = exp_Baseline.result[0].metric_avg_results.get("AUC")
         AUC[1][TestId][TrainSize-1] = exp_fixV.result[0].metric_avg_results.get("AUC")
         AUC[2][TestId][TrainSize-1] = exp_transferV.result[0].metric_avg_results.get("AUC")
-#
-# import pandas as pd
-# table_RECALL20 = pd.DataFrame(REC[0])
-# filepath = 'netflixREC_baseline.xlsx'
-# table_RECALL20.to_excel(filepath, index=False)
-# table_RECALL20 = pd.DataFrame(REC[1])
-# filepath = 'netflixREC_fixV.xlsx'
-# table_RECALL20.to_excel(filepath, index=False)
-# table_RECALL20 = pd.DataFrame(REC[2])
-# filepath = 'netflixREC_transV.xlsx'
-# table_RECALL20.to_excel(filepath, index=False)
 
 import pandas as pd
-table_RECALL20 = pd.DataFrame(REC[0])
+table = pd.DataFrame(REC[0])
 filepath = 'C:/Users\jyguo\Desktop/result/BPR/movielens/iter200/REC_baseline.xlsx'
-table_RECALL20.to_excel(filepath, index=False)
-table_RECALL20 = pd.DataFrame(REC[1])
+table.to_excel(filepath, index=False)
+table = pd.DataFrame(REC[1])
 filepath = 'C:/Users\jyguo\Desktop/result/BPR/movielens/iter200/REC_fixV.xlsx'
-table_RECALL20.to_excel(filepath, index=False)
-table_RECALL20 = pd.DataFrame(REC[2])
+table.to_excel(filepath, index=False)
+table = pd.DataFrame(REC[2])
 filepath = 'C:/Users\jyguo\Desktop/result/BPR/movielens/iter200/REC__transV.xlsx'
-table_RECALL20.to_excel(filepath, index=False)
+table.to_excel(filepath, index=False)
 
-table_RECALL20 = pd.DataFrame(AUC[0])
+table = pd.DataFrame(AUC[0])
 filepath = 'C:/Users\jyguo\Desktop/result/BPR/movielens/iter200/AUC_baseline.xlsx'
-table_RECALL20.to_excel(filepath, index=False)
-table_RECALL20 = pd.DataFrame(AUC[1])
+table.to_excel(filepath, index=False)
+table = pd.DataFrame(AUC[1])
 filepath = 'C:/Users\jyguo\Desktop/result/BPR/movielens/iter200/AUC_fixV.xlsx'
-table_RECALL20.to_excel(filepath, index=False)
-table_RECALL20 = pd.DataFrame(AUC[2])
+table.to_excel(filepath, index=False)
+table = pd.DataFrame(AUC[2])
 filepath = 'C:/Users\jyguo\Desktop/result/BPR/movielens/iter200/AUC__transV.xlsx'
-table_RECALL20.to_excel(filepath, index=False)
+table.to_excel(filepath, index=False)
 
-table_RECALL20 = pd.DataFrame(PRE[0])
+table = pd.DataFrame(PRE[0])
 filepath = 'C:/Users\jyguo\Desktop/result/BPR/movielens/iter200/PRE_baseline.xlsx'
-table_RECALL20.to_excel(filepath, index=False)
-table_RECALL20 = pd.DataFrame(PRE[1])
+table.to_excel(filepath, index=False)
+table = pd.DataFrame(PRE[1])
 filepath = 'C:/Users\jyguo\Desktop/result/BPR/movielens/iter200/PRE_fixV.xlsx'
-table_RECALL20.to_excel(filepath, index=False)
-table_RECALL20 = pd.DataFrame(PRE[2])
+table.to_excel(filepath, index=False)
+table = pd.DataFrame(PRE[2])
 filepath = 'C:/Users\jyguo\Desktop/result/BPR/movielens/iter200/PRE__transV.xlsx'
-table_RECALL20.to_excel(filepath, index=False)
+table.to_excel(filepath, index=False)
